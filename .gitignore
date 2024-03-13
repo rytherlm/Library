@@ -1,0 +1,4 @@
+db.yml
+
+*.pyc
+__pycache__/
