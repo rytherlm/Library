@@ -13,6 +13,6 @@ api.add_resource(Book, '/book')
 if __name__ == '__main__':
     print("Loading db")
     print("Starting flask")
-    app.run(debug=True), #starts Flask
+    app.run(debug=True,port=5002), #starts Flask, new port
 
 
