@@ -97,9 +97,10 @@ def exec_commit(sql, args={}):
                                 host=config['host'],
                                 port=server.local_bind_port)
             cur = conn.cursor()
-            result = cur.execute(sql, args)
+            cur.execute(sql, args)
             conn.commit()
             conn.close()
-            return result
+            return True 
     except Exception as e:
         print("Connection failed", e)
+        return False

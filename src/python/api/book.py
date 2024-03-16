@@ -11,13 +11,15 @@ class Book(Resource):
             sql = "SELECT * FROM Book WHERE BookID = %s"
             result = exec_get_one(sql, (book_id,))
             if result:
-                return result, 200  
+                return result,200  
             else:
                 return 404
         else:
             sql = "SELECT * FROM Book"
             result = exec_get_all(sql)
-            return result if result else [], 200 
+            if result:
+                return result, 200
+            return [],200
 
     def put(self):
         parser = reqparse.RequestParser()
@@ -29,8 +31,9 @@ class Book(Resource):
         args = parser.parse_args()
 
         sql = "UPDATE Book SET Title = %s, ReleaseDate = %s, Length = %s, Audience = %s WHERE BookID = %s"
-        exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience'], args['BookID']))
-        return 200
+        if exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience'], args['BookID'])):
+            return 200
+        return 404
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -40,15 +43,18 @@ class Book(Resource):
         parser.add_argument('Audience', required=True)
         args = parser.parse_args()
 
-        sql = "UPDATE Book SET Title = %s, ReleaseDate = %s, Length = %s, Audience = %s WHERE BookID = %s"
-        exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience']))
-        return 201
+        sql = "INSERT INTO Book (Title, ReleaseDate, Length, Audience) VALUES (%s, %s, %s, %s)"
+        if exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience'])):
+            return 201
+        return 404
+
         
 
     def delete(self):
         book_id = request.args.get('BookID', type=int)
         if book_id:
             sql = "DELETE FROM Book WHERE BookID = %s"
-            exec_commit(sql, (book_id,))
-            return 200
+            if exec_commit(sql, (book_id,)):
+                return 200
+            return 404
         return 400
