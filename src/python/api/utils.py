@@ -14,14 +14,12 @@ def connect():
                                 ssh_password=config['password'],
                                 remote_bind_address=('127.0.0.1', 5432)) as server:
             server.start()
-            print("SSH tunnel established")
             conn = psycopg2.connect(database=config['database'],
                                 user=config['user'],
                                 password=config['password'],
                                 host=config['host'],
                                 port=server.local_bind_port)
             curs = conn.cursor()
-            print("Database connection established")
             curs.execute("SELECT * FROM author")
             rows = curs.fetchall()
             print(rows)
@@ -40,7 +38,6 @@ def exec_get_one(sql, args={}):
                                 ssh_password=config['password'],
                                 remote_bind_address=('127.0.0.1', 5432)) as server:
             server.start()
-            print("SSH tunnel established")
             conn = psycopg2.connect(database=config['database'],
                                 user=config['user'],
                                 password=config['password'],
@@ -65,7 +62,6 @@ def exec_get_all(sql, args={}):
                                 ssh_password=config['password'],
                                 remote_bind_address=('127.0.0.1', 5432)) as server:
             server.start()
-            print("SSH tunnel established")
             conn = psycopg2.connect(database=config['database'],
                                 user=config['user'],
                                 password=config['password'],
@@ -90,7 +86,6 @@ def exec_commit(sql, args={}):
                                 ssh_password=config['password'],
                                 remote_bind_address=('127.0.0.1', 5432)) as server:
             server.start()
-            print("SSH tunnel established")
             conn = psycopg2.connect(database=config['database'],
                                 user=config['user'],
                                 password=config['password'],

@@ -5,11 +5,10 @@ from .utils import *
 
 
 class Book(Resource):
-    def get(self):
-        book_id = request.args.get('BookID', type=int)
-        if book_id is not None:
+    def get(self, id=None):
+        if id is not None:
             sql = "SELECT * FROM Book WHERE BookID = %s"
-            result = exec_get_one(sql, (book_id,))
+            result = exec_get_one(sql, (id,))
             if result:
                 return result,200  
             else:
@@ -31,7 +30,7 @@ class Book(Resource):
         args = parser.parse_args()
 
         sql = "UPDATE Book SET Title = %s, ReleaseDate = %s, Length = %s, Audience = %s WHERE BookID = %s"
-        if exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience'], args['BookID'])):
+        if exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience'], args['BookID'],)):
             return 200
         return 404
 
@@ -44,7 +43,7 @@ class Book(Resource):
         args = parser.parse_args()
 
         sql = "INSERT INTO Book (Title, ReleaseDate, Length, Audience) VALUES (%s, %s, %s, %s)"
-        if exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience'])):
+        if exec_commit(sql, (args['Title'], args['ReleaseDate'], args['Length'], args['Audience'],)):
             return 201
         return 404
 
