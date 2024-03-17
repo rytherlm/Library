@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link} from 'react-router-dom';
 import './styling/SignUp.css';
 
 const SignUp = () => {
@@ -61,6 +61,9 @@ const SignUp = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Sign Up</button>
+        <div className="signup-footer">
+          Already have an account? <Link to="/login">Log in here</Link>
+        </div>
       </form>
     </div>
   );
