@@ -6,20 +6,27 @@ from flask_restful import reqparse
 from .utils import *
 
 class BookUser(Resource):
-    def get(self, user_id=None):
-        if user_id is not None:
-            sql = "SELECT * FROM BookUser WHERE UserID = %s"
-            result = exec_get_one(sql, (user_id,))
-            if result:
-                return result, 200
-            else:
-                return 404
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('Username', location='args')
+        parser.add_argument('Password', location='args')
+        args = parser.parse_args()
+
+        username = args.get('Username')
+        password = args.get('Password')
+
+        if not username or not password:
+            return 400
+
+        sql = "SELECT * FROM BookUser WHERE Username = %s AND Password = %s"
+        result = exec_get_one(sql, (username, password))
+
+        if result is None:
+            return {"message": "Unauthorized"}, 401
         else:
-            sql = "SELECT * FROM BookUser"
-            result = exec_get_all(sql)
-            if result:
-                return result, 200
-            return [], 200
+            # If a user is found, proceed with logging them in
+            return {"message": "Authorized"}, 200
+
 
     def put(self):
         parser = reqparse.RequestParser()

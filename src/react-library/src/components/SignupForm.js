@@ -12,6 +12,11 @@ const SignUp = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+
+    if (!username || !password || !firstName || !lastName) {//make sure all fields are filled in 
+      console.log("Not all fields entered")
+      return; 
+    }
     try {
       const today = new Date().toISOString().slice(0, 10); 
       await axios.post('http://localhost:5002/bookuser', {

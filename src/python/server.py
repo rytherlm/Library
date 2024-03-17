@@ -5,12 +5,16 @@ from api.book import Book
 from api.bookUser import BookUser
 from api.utils import *
 
+
+
 app = Flask(__name__) #create Flask instance
 CORS(app) #Enable CORS on Flask server to work with Nodejs pages
 api = Api(app) #api router
 
 api.add_resource(BookUser, '/bookuser', '/bookuser/<int:user_id>')  
 api.add_resource(Book, '/book', '/book/<int:id>')  
+
+
 
 
 if __name__ == '__main__':
