@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate,Link} from 'react-router-dom';
 import './styling/SignUp.css';
+import Cookies from 'js-cookie';
+
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
@@ -27,6 +29,7 @@ const SignUp = () => {
         LastAccess: today,  
         CreationDate: today 
       });
+      Cookies.set('username', username, { expires: 1 });
       navigate('/home'); 
     } catch (error) {
       console.error('Sign up failed:', error);
