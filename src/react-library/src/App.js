@@ -1,19 +1,21 @@
-import { Component } from "react";
-import {BrowserRouter, Routes, Route} from "react-router-dom"
-import MainPage from "./MainPage";
-import LoginPage from "./LoginPage";
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from './components/LoginForm';
+import SignUp from './components/SignupForm';
+import Home from './components/Home';
 
-export default class App extends Component{
-  render(){
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<LoginPage/>}/>
-          <Route path="*" element={<LoginPage/>}/>
-          <Route path = "/login" element={<LoginPage/>}/>
-          <Route path = "/main" element={<MainPage/>}/>
-        </Routes>
-      </BrowserRouter>
-    )
-  }
-}
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Login />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;

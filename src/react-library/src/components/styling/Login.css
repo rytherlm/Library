@@ -1,0 +1,54 @@
+/* src/components/Login.css */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f2ef;
+  }
+  
+  .login-form {
+    padding: 2rem;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+  }
+  
+  .login-form input {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.9rem;
+  }
+  
+  .login-form button {
+    padding: 1rem;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: #0073b1;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  
+  .separator {
+    text-align: center;
+    margin: 1rem 0;
+  }
+  
+  .create-account {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .create-account a {
+    color: #0073b1;
+    text-decoration: none;
+  }
+  
