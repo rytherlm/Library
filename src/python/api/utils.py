@@ -96,7 +96,7 @@ def exec_commit(sql, args={}):
             conn.commit()
             result = cur.fetchone()
             conn.close()
-            return result 
+            return result[0]
     except Exception as e:
         print("Connection failed", e)
         return None

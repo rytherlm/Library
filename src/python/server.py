@@ -17,6 +17,7 @@ api.add_resource(Book, '/book', '/book/<int:id>')
 
 
 
+
 if __name__ == '__main__':
     print("Loading db")
     print("Starting flask")

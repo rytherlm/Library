@@ -11,29 +11,44 @@ const SignUp = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+
+
+
+  
 
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    if (!username || !password || !firstName || !lastName) {//make sure all fields are filled in 
-      console.log("Not all fields entered")
+    if (!username || !password || !firstName || !lastName ||!email){
+      alert("Please fill in all fields.");
       return; 
     }
+
     try {
       const today = new Date().toISOString().slice(0, 10); 
-      await axios.post('http://localhost:5002/bookuser', {
+      const result = await axios.post('http://localhost:5002/bookuser', {
         Username: username,
         Password: password,
+        Email: email,
         FirstName: firstName,
         LastName: lastName,
         LastAccess: today,  
-        CreationDate: today 
+        CreationDate: today,
+        
       });
-      Cookies.set('username', username, { expires: 1 });
-      navigate('/home'); 
+      console.log(result.status)
+      if (result.status === 201){
+        Cookies.set('username', username, { expires: 1 });
+        navigate('/home');
+      }else{
+        alert("Usernmae Or Password Already In Use")
+      }
+       
     } catch (error) {
       console.error('Sign up failed:', error);
     }
+  
   };
 
   return (
@@ -50,6 +65,12 @@ const SignUp = () => {
           placeholder="Last Name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
+        />
+        <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="text"
