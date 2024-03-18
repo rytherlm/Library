@@ -1,9 +1,8 @@
-from flask import jsonify
 from flask_restful import Resource
-
 from flask_restful import request
 from flask_restful import reqparse
 from .utils import *
+from flask_bcrypt import Bcrypt
 
 class BookUser(Resource):
     def get(self):
@@ -53,9 +52,11 @@ class BookUser(Resource):
         parser.add_argument('LastAccess', required=True)
         parser.add_argument('CreationDate', required=True)
         args = parser.parse_args()
+        
+        hash = Bcrypt().generate_password_hash(args['Password']).decode('utf-8')
 
         sql = "INSERT INTO BookUser (Username, Password, FirstName, LastName, LastAccess, CreationDate) VALUES (%s, %s, %s, %s, %s, %s)"
-        if exec_commit(sql, (args['Username'], args['Password'], args['FirstName'], args['LastName'], args['LastAccess'], args['CreationDate'],)):
+        if exec_commit(sql, (args['Username'], hash, args['FirstName'], args['LastName'], args['LastAccess'], args['CreationDate'],)):
             return 201,
         return 404
 
