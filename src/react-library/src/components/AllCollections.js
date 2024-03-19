@@ -1,3 +1,4 @@
+// Ethan
 // Users will be to see the list of all their collections by name in ascending order. The list
 // must show the following information per collection:
 // – Collection’s name
@@ -6,7 +7,7 @@
 
 
 
-// Users can add and delete books from their collection.
+// Users can delete books from their collection.
 
 
 
