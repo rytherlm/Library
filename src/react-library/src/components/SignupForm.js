@@ -28,10 +28,9 @@ const SignUp = () => {
 
     try {
       const today = new Date().toISOString().slice(0, 10);
-      const hashedPassword = bcrypt.hashSync(password, 10); 
       const result = await axios.post('http://localhost:5002/bookuser', {
         Username: username,
-        Password: hashedPassword,
+        Password: password,
         Email: email,
         FirstName: firstName,
         LastName: lastName,

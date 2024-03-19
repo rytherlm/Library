@@ -11,12 +11,8 @@ app = Flask(__name__) #create Flask instance
 CORS(app) #Enable CORS on Flask server to work with Nodejs pages
 api = Api(app) #api router
 
-api.add_resource(BookUser, '/bookuser', '/bookuser/<int:user_id>')  
-api.add_resource(Book, '/book', '/book/<int:id>')  
-
-
-
-
+api.add_resource(BookUser, '/bookuser')  
+api.add_resource(Book, '/book')  
 
 if __name__ == '__main__':
     print("Loading db")

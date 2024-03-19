@@ -5,20 +5,27 @@ from .utils import *
 
 
 class Book(Resource):
-    def get(self, id=None):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('bookid', location='args')
+        parser.add_argument('bookname', location='args')
+        args = parser.parse_args()
+
+        id = args.get('bookid')
+        name = args.get('bookname')
         if id is not None:
             sql = "SELECT * FROM Book WHERE BookID = %s"
             result = exec_get_one(sql, (id,))
             if result:
-                return result,200  
+                return {"data": result}, 200
             else:
                 return 404
-        else:
-            sql = "SELECT * FROM Book"
-            result = exec_get_all(sql)
+        elif name is not None:
+            sql = "SELECT * FROM Book WHERE title LIKE %s"
+            result = exec_get_all(sql, (f"%{name}%",))
             if result:
-                return result, 200
-            return [],200
+                return {"data": result}, 200
+        return [],401
 
     def put(self):
         parser = reqparse.RequestParser()
