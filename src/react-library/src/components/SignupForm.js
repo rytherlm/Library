@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate,Link} from 'react-router-dom';
 import './styling/SignUp.css';
 import Cookies from 'js-cookie';
-import bcrypt from 'bcryptjs';
 
 
 const SignUp = () => {

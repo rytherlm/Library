@@ -7,8 +7,9 @@
 
 // Users can follow another user. Users can search for new users to follow by email
 import {Component} from "react";
-import {InputGroup, InputGroupText, Input, Button} from 'reactstrap';
+import {InputGroup, Input, Button} from 'reactstrap';
 import axios from "axios";
+import './styling/Search.css';
 
 class Search extends Component
 {
@@ -62,24 +63,29 @@ class Search extends Component
     render()
     {
         return(
-            <div>
-                <form onSubmit = {this.searchData}>
-                    <h1>Search</h1>
-                    <InputGroup>
-                        <Input onChange = {this.changeSearch}/>
-                    </InputGroup>
-                    <InputGroup>
-                        <select value={this.state.searchType} onChange={this.changeSearchType}>
-                            <option value="user">User</option>
-                            <option value="book">Book</option>
-                        </select>
-                    </InputGroup>
-                    <Button type = "submit">Search</Button>
-                </form>
-                {this.state.searchResult.map((stuff) =>
-                    <h3>{stuff[1]}</h3>
-                )}
+            <div className="search-container">
+            <form className="search-form" onSubmit={this.searchData}>
+              <h1>Search</h1>
+              <InputGroup className="search-input">
+                <Input onChange={this.changeSearch} />
+              </InputGroup>
+              <InputGroup className="search-select">
+                <select value={this.state.searchType} onChange={this.changeSearchType}>
+                  <option value="user">User</option>
+                  <option value="book">Book</option>
+                </select>
+              </InputGroup>
+              <Button className="search-button" type="submit">Search</Button>
+            </form>
+            <div className="search-result">
+              {this.state.searchResult.map((stuff, index) => (
+                <div className="search-result-item" key={index}>
+                  <h3>{stuff[1]}</h3>
+                </div>
+              ))}
             </div>
+          </div>
+          
         )
     }
 }

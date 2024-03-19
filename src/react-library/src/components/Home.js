@@ -10,10 +10,17 @@ const Home = () => {
     navigate('/login');
   };
 
+  const search = () => {
+    navigate('/search');
+  };
+  
+
   return (
     <div>
       <h1>Welcome Home, {username}</h1>
       <button onClick={handleLogout}>Logout</button>
+
+      <button onClick={search}>search</button>
     </div>
   );
 };
