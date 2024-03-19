@@ -2,7 +2,7 @@ from datetime import datetime
 from flask_restful import Resource
 from flask_restful import request
 from flask_restful import reqparse
-import bcrypt
+import hashlib
 from .utils import *
 
 class BookUser(Resource):
@@ -14,25 +14,22 @@ class BookUser(Resource):
 
         username = args.get('Username')
         password = args.get('Password')
-        password = password.encode('utf-8')
-        salt = bcrypt.gensalt(rounds=10)
-        hashed_password = bcrypt.hashpw(password, salt)
-
-        if not username or not password:
+        if not username:
             return 400
 
-        sql = "SELECT userid, password FROM BookUser WHERE Username = %s"
-        result = exec_get_one(sql, (username,))
-
-        if result is None:
+        sql = "SELECT userid, username, password FROM BookUser WHERE Username LIKE %s"
+        result = exec_get_all(sql, (f"{username}%",))
+        print(result)
+        if result == []:
             return {"message": "Unauthorized"}, 401
-        elif result[0] == hashed_password:
-            user_id = result[0]  
+        elif not password is None and result[0][2] == hashlib.sha512(password.encode('utf-8')).hexdigest():
+            user_id = result[0][0]  
             access_time = datetime.now()
             timesql = "INSERT INTO UserAccessTimes (UserID, AccessTime) VALUES (%s, %s)"
             exec_commit(timesql, (user_id, access_time))
-            return {"message": "Authorized"}, 200
-        
+            return {"message": "Authorized", "data": result}, 200
+        else:
+            return {"message": "Unauthorized", "data": result}, 200
 
     def put(self):
         parser = reqparse.RequestParser()
@@ -58,8 +55,7 @@ class BookUser(Resource):
         parser.add_argument('LastAccess', required=True)
         parser.add_argument('CreationDate', required=True)
         parser.add_argument('Email', required=True)
-        args = parser.parse_args()
-        
+        args = parser.parse_args()        
         
         checkUserName = "SELECT 1 FROM BookUser WHERE Username = %s" 
         if exec_get_one(checkUserName, (args['Username'],)):
@@ -72,7 +68,7 @@ class BookUser(Resource):
         creation_date = datetime.now()
 
         sql = "INSERT INTO BookUser (Username, Password, FirstName, LastName, CreationDate) VALUES (%s, %s, %s, %s, %s) RETURNING UserID;"
-        Uid = exec_commit(sql, (args['Username'], args["Password"], args['FirstName'], args['LastName'], creation_date))
+        Uid = exec_commit(sql, (args['Username'], hashlib.sha512(args['Password'].encode('utf-8')).hexdigest(), args['FirstName'], args['LastName'], creation_date))
         
         if Uid:
             email_insert_sql = "INSERT INTO Email (UserID, EmailAddress) VALUES (%s, %s);"
