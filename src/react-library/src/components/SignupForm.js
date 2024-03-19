@@ -41,8 +41,6 @@ const SignUp = () => {
       if (result.status === 201){
         Cookies.set('username', username, { expires: 1 });
         navigate('/home');
-      }else{
-        alert("Usernmae Or Password Already In Use")
       }
        
     } catch (error) {
