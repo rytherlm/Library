@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate,Link} from 'react-router-dom';
 import './styling/SignUp.css';
 import Cookies from 'js-cookie';
+import bcrypt from 'bcryptjs';
 
 
 const SignUp = () => {
@@ -26,10 +27,11 @@ const SignUp = () => {
     }
 
     try {
-      const today = new Date().toISOString().slice(0, 10); 
+      const today = new Date().toISOString().slice(0, 10);
+      const hashedPassword = bcrypt.hashSync(password, 10); 
       const result = await axios.post('http://localhost:5002/bookuser', {
         Username: username,
-        Password: password,
+        Password: hashedPassword,
         Email: email,
         FirstName: firstName,
         LastName: lastName,

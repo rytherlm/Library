@@ -2,6 +2,7 @@ from datetime import datetime
 from flask_restful import Resource
 from flask_restful import request
 from flask_restful import reqparse
+import bcrypt
 from .utils import *
 
 class BookUser(Resource):
@@ -13,16 +14,19 @@ class BookUser(Resource):
 
         username = args.get('Username')
         password = args.get('Password')
+        password = password.encode('utf-8')
+        salt = bcrypt.gensalt(rounds=10)
+        hashed_password = bcrypt.hashpw(password, salt)
 
         if not username or not password:
             return 400
 
-        sql = "SELECT UserID FROM BookUser WHERE Username = %s AND Password = %s"
-        result = exec_get_one(sql, (username, password))
+        sql = "SELECT userid, password FROM BookUser WHERE Username = %s"
+        result = exec_get_one(sql, (username,))
 
         if result is None:
             return {"message": "Unauthorized"}, 401
-        else:
+        elif result[0] == hashed_password:
             user_id = result[0]  
             access_time = datetime.now()
             timesql = "INSERT INTO UserAccessTimes (UserID, AccessTime) VALUES (%s, %s)"
