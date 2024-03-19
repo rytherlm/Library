@@ -19,15 +19,17 @@ class BookUser(Resource):
 
         sql = "SELECT userid, username, password FROM BookUser WHERE Username LIKE %s"
         result = exec_get_all(sql, (f"{username}%",))
-        print(result)
         if result == []:
             return {"message": "Unauthorized"}, 401
-        elif not password is None and result[0][2] == hashlib.sha512(password.encode('utf-8')).hexdigest():
-            user_id = result[0][0]  
-            access_time = datetime.now()
-            timesql = "INSERT INTO UserAccessTimes (UserID, AccessTime) VALUES (%s, %s)"
-            exec_commit(timesql, (user_id, access_time))
-            return {"message": "Authorized", "data": result}, 200
+        elif (not password is None):
+            if result[0][2] == hashlib.sha512(password.encode('utf-8')).hexdigest():
+                user_id = result[0][0]  
+                access_time = datetime.now()
+                timesql = "INSERT INTO UserAccessTimes (UserID, AccessTime) VALUES (%s, %s)"
+                exec_commit(timesql, (user_id, access_time))
+                return {"message": "Authorized", "data": result}, 200
+            else:
+                return {"message": "Unauthorized"}, 401
         else:
             return {"message": "Unauthorized", "data": result}, 200
 
