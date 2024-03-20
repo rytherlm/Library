@@ -19,6 +19,7 @@ class Search extends Component
             searchQuery: "",
             searchResult: [],
             searchType: "user",
+            attributeType: "username",
         }
     }
 
@@ -26,23 +27,27 @@ class Search extends Component
         e.preventDefault();
         try{
             if(this.state.searchType === "user"){
-                const params = new URLSearchParams({ Username: this.state.searchQuery });
-                const response = await axios.get(`http://localhost:5002/bookuser?${params.toString()}`);
-                if(response.status === 200){
-                    this.setState({searchResult: response.data.data});
+                const params = new URLSearchParams();
+                params.append(this.state.attributeType, this.state.searchQuery);                
+                const response = await axios.get(`http://localhost:5002/usersearch?${params.toString()}`);
+                if(response.data == null || response.data.length == 0){
+                    this.setState({searchResult: []})
+                    alert("No result.")
                 }
                 else{
-                    this.setState({searchResult: ""});
+                    this.setState({searchResult: response.data});
                 }
             }
             else{
-                const params = new URLSearchParams({ bookname: this.state.searchQuery });
-                const response = await axios.get(`http://localhost:5002/book?${params.toString()}`);
-                if(response.status === 200){
-                    this.setState({searchResult: response.data.data});
+                const params = new URLSearchParams();
+                params.append(this.state.attributeType, this.state.searchQuery);
+                const response = await axios.get(`http://localhost:5002/booksearch?${params.toString()}`);
+                if(response.data == null || response.data.length == 0){
+                    this.setState({searchResult: []})
+                    alert("No result.")
                 }
                 else{
-                    this.setState({searchResult: ""});
+                    this.setState({searchResult: response.data});
                 }
             }
         } catch(error){
@@ -54,14 +59,44 @@ class Search extends Component
 
     changeSearchType = (e) => {
         this.setState({searchType: e.target.value})
+        if(e.target.value === "user"){
+            this.setState({attributeType: "username"})
+        }
+        else{
+            this.setState({attributeType: "title"})
+        }
     }
 
     changeSearch = (e) => {
         this.setState({searchQuery:e.target.value})
     }
 
+    changeAttributeType = (e) => {
+        this.setState({attributeType: e.target.value})
+    }
+
     render()
     {
+        let attribute;
+        if(this.state.searchType === "user"){
+            attribute = (
+                <select onChange = {this.changeAttributeType}>
+                    <option value = "username">Username</option>
+                    <option value = "email">Email</option>
+                </select>
+            )
+        }
+        else{
+            attribute = (
+                <select onChange = {this.changeAttributeType}>
+                    <option value = "title">Title</option>
+                    <option value = "releasedate">Release Date</option>
+                    <option value = "author">Author</option>
+                    <option value = "publisher">Publisher</option>
+                    <option value = "genre">Genre</option>
+                </select>
+            )
+        }
         return(
             <div className="search-container">
             <form className="search-form" onSubmit={this.searchData}>
@@ -74,6 +109,9 @@ class Search extends Component
                   <option value="user">User</option>
                   <option value="book">Book</option>
                 </select>
+                <div style={{ marginLeft: '10px' }}>
+                    {attribute}
+                </div>
               </InputGroup>
               <Button className="search-button" type="submit">Search</Button>
             </form>
