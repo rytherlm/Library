@@ -6,6 +6,7 @@ from api.bookUser import BookUser
 from api.bookSearch import BookSearch
 from api.userSearch import UserSearch
 from api.utils import *
+from api.friends import Friends
 
 
 
@@ -17,6 +18,7 @@ api.add_resource(BookUser, '/bookuser')
 api.add_resource(Book, '/book')  
 api.add_resource(BookSearch, '/booksearch')
 api.add_resource(UserSearch, '/usersearch')
+api.add_resource(Friends, '/friends')
 
 if __name__ == '__main__':
     print("Loading db")

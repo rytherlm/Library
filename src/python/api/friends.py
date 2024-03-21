@@ -5,16 +5,25 @@ from flask_restful import reqparse
 from .utils import *
 
 class Friends(Resource):
-    def get(self, user_id=None):
-        if user_id is not None:
-            sql = "SELECT FriendID FROM Friends WHERE UserID = %s"
-            friends = exec_get_all(sql, (user_id,))
-            if friends:
-                return friends, 200
-            else:
-                return 404
-        else:
-            return 400 
+    def get(self):
+        count = len(request.args)
+        sql = "SELECT * FROM bookuser WHERE"
+        params = []
+        for i, key in enumerate(request.args.keys()):
+            value = request.args[key]
+            if(key == "username"):
+                sql = "SELECT userid FROM bookuser WHERE username = %s"
+                userid = exec_get_one(sql, (value,))
+                sql = "SELECT friendid FROM friends WHERE userid = %s"
+                friendids = exec_get_all(sql, userid[0])
+                returnResult = []
+                for friendid in friendids:
+                    sql = "SELECT userid, username, firstname, lastname FROM bookuser WHERE userid = %s"
+                    result = exec_get_one(sql, friendid[0])
+                    returnResult.append(result)
+                return returnResult
+        result = exec_get_all(sql, params)
+        return result
 
     def post(self):
         parser = reqparse.RequestParser()
