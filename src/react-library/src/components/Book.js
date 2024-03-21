@@ -6,4 +6,3 @@
 // a book is read by a user. You do not need to actually be able to read books, simply
 // mark them as read
 
-// Users can add books from their collection.
