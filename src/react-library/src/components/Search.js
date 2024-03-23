@@ -79,6 +79,10 @@ class Search extends Component
         this.setState({attributeType: e.target.value})
     }
 
+    setUserInfo = (name) => {
+        Cookies.set("UserInfoName", name)
+    }
+
     render()
     {
         let attribute;
@@ -128,7 +132,7 @@ class Search extends Component
                             return (
                                 <Row key={index}>
                                     <Col className="mb-4">
-                                        <Link to={`/userinfo/${stuff[1]}`} className = "link-no-underline">
+                                        <Link to={`/userinfo/${stuff[1]}`} className = "link-no-underline" onClick={this.setUserInfo(stuff[1])}>
                                             <div className="search-result-item">
                                                 <h3>{stuff[1]}</h3>
                                             </div>

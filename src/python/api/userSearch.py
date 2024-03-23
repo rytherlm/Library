@@ -20,5 +20,4 @@ class UserSearch(Resource):
                 sql = "SELECT userid, username, firstname, lastname FROM bookuser WHERE userid = %s"
                 params.append(userid[0])
         result = exec_get_all(sql, params)
-        print(result)
         return result

@@ -31,6 +31,7 @@ class BookUser(Resource):
             else:
                 return {"message": "Unauthorized"}, 401
         else:
+            result = exec_get_all("SELECT username, firstname, lastname FROM bookuser WHERE Username LIKE %s", (f"{username}%",))
             return {"message": "Unauthorized", "data": result}, 200
 
     def put(self):
