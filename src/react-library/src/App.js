@@ -4,6 +4,7 @@ import Login from './components/LoginForm';
 import SignUp from './components/SignupForm';
 import Home from './components/Home';
 import Search from './components/Search';
+import UserInfo from './components/UserInfo';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/" element={<Login />} />
         <Route path="search" element={<Search/>} />
+        <Route path="/userinfo/:username" element={<UserInfo />} />
       </Routes>
     </Router>
   );

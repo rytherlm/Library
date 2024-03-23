@@ -44,15 +44,23 @@
   }
   
   .search-result-item {
-    background-color: #f3f2ef;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    width: 80%;
-    max-width: 600px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
   }
   
-  .search-result-item h3 {
-    margin-bottom: 0.5rem;
+  .search-result-item :hover{
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .search-result-item h4 {
+    margin-bottom: 10px;
   }  
+
+  .link-no-underline {
+    text-decoration: none;
+  }
+
+  h4 {
+    font-size: medium;
+  }
