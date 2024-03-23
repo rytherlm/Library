@@ -7,7 +7,7 @@ from .utils import *
 class Friends(Resource):
     def get(self):
         count = len(request.args)
-        sql = "SELECT * FROM bookuser WHERE"
+        sql = ""
         params = []
         for i, key in enumerate(request.args.keys()):
             value = request.args[key]
@@ -15,11 +15,11 @@ class Friends(Resource):
                 sql = "SELECT userid FROM bookuser WHERE username = %s"
                 userid = exec_get_one(sql, (value,))
                 sql = "SELECT friendid FROM friends WHERE userid = %s"
-                friendids = exec_get_all(sql, userid[0])
+                friendids = exec_get_all(sql, (userid[0],))
                 returnResult = []
                 for friendid in friendids:
                     sql = "SELECT userid, username, firstname, lastname FROM bookuser WHERE userid = %s"
-                    result = exec_get_one(sql, friendid[0])
+                    result = exec_get_one(sql, (friendid[0],))
                     returnResult.append(result)
                 return returnResult
         result = exec_get_all(sql, params)

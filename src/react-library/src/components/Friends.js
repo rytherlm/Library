@@ -1,10 +1,8 @@
-// The application must also allow an user to unfollow a another user
-
 import {Component} from "react";
 import {InputGroup, Input, Button} from 'reactstrap';
 import axios from "axios";
-import './styling/Search.css';
 import Cookies from 'js-cookie';
+import { Link } from "react-router-dom";
 
 class Friends extends Component
 {
@@ -12,28 +10,23 @@ class Friends extends Component
         super(props);
         this.state={
             friends: [],
+            dataLoaded: false,
         }
     }
 
-    searchData = async (e) => {
-        e.preventDefault();
+    searchData = async () => {
         try{
-            if(this.state.searchType === "user"){
-                const params = new URLSearchParams();
-                params.append({Username: Cookies.get('username')});                
-                const response = await axios.get(`http://localhost:5002/friends?${params.toString()}`);
-                if(response.data == null || response.data.length == 0){
-                    this.setState({friends: []})
-                    alert("No result.")
-                }
-                else{
-                    this.setState({friends: response.data});
-                }
+            const params = new URLSearchParams({username: Cookies.get('username')});
+            const response = await axios.get(`http://localhost:5002/friends?${params.toString()}`);
+            if(response.data == null || response.data.length == 0){
+                this.setState({friends: []})
+                alert("No result.")
+            }
+            else{
+                this.setState({friends: response.data, dataLoaded:true});
             }
         } catch(error){
-            if(error.response && error.response.status === 401){
-                alert('No Results')
-            }
+            console.log(error)
         }
     }
 
@@ -41,13 +34,26 @@ class Friends extends Component
         this.searchData();
     }
 
+    setUserInfo = (name) => {
+        Cookies.set("UserInfoName", name)
+    }
+
     render()
     {
+        if(!this.state.dataLoaded){
+            return(
+                <h1>Loading...</h1>
+            )
+        }
         return(
           <div>
+            <h1>Friends</h1>
               {this.state.friends.map((stuff, index) => (
-                <div className="search-result-item" key={index}>
-                  <h3>{stuff[0]}</h3>
+                <div key={index}>
+                    <Link to={`/userinfo/${stuff[1]}`} className = "link-no-underline" onClick={this.setUserInfo(stuff[1])}>
+                    <h3>{stuff[2]} {stuff[3]}</h3>
+                    <h4>{stuff[1]}</h4>
+                    </Link>
                 </div>
               ))}
           </div>
