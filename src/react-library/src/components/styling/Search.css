@@ -1,66 +1,64 @@
 .search-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 2rem;
-  }
-  
-  .search-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .search-form h1 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .search-input {
-    width: 300px;
-    margin-bottom: 1rem;
-  }
-  
-  .search-select {
-    width: 300px;
-    margin-bottom: 1rem;
-  }
-  
-  .search-button {
-    padding: 1rem 2rem;
-    background-color: #0073b1;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  .search-result {
-    margin-top: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .search-result-item {
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .search-result-item :hover{
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
 
-  .search-result-item h4 {
-    margin-bottom: 10px;
-  }  
+.search-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .link-no-underline {
-    text-decoration: none;
-  }
+.search-form h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
 
-  h4 {
-    font-size: medium;
-  }
+.search-input, .search-select {
+  width: 300px;
+  margin-bottom: 1rem;
+}
+
+.search-button {
+  padding: 1rem 2rem;
+  background-color: #0073b1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.search-result-item {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1rem;
+  margin: 0.5rem 0;
+  width: 300px;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-result-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.search-result-item h3, .search-result-item h4 {
+  margin: 0;
+}
+
+.link-no-underline {
+  text-decoration: none;
+  color: inherit;
+}
+
+

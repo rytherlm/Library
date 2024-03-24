@@ -2,6 +2,7 @@ import { Component } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import {Button} from "reactstrap"
+import './styling/User.css'
 
 class UserInfo extends Component
 {
@@ -65,36 +66,34 @@ class UserInfo extends Component
             this.getUserInfo();
         });
     }
-    render()
-    {
+    render() {
         let followButton;
-        if(this.state.isFriends){
-            followButton = (
-                <Button type = "submit" onClick = {() => this.followClick()}>Unfollow</Button>
-            )
+        if (this.state.isFriends) {
+          followButton = (
+            <Button className="userButton" type="submit" onClick={() => this.followClick()}>Unfollow</Button>
+          );
+        } else {
+          followButton = (
+            <Button className="userButton" type="submit" onClick={() => this.followClick()}>Follow</Button>
+          );
         }
-        else{
-            followButton = (
-                <Button type = "submit" onClick = {() => this.followClick()}>Follow</Button>
-            )
-        }
-        if(!this.state.dataLoaded){
-            return(
-            <div>
-                <h1>Loading...</h1>
+        if (!this.state.dataLoaded) {
+          return (
+            <div className="user">
+                <div className="loading-message">Loading...</div>
             </div>
-            )
+          );
         }
-
-        return(
-            <div>
-                <h1>Username: {this.state.checkUser}</h1>
-                <h2>First Name:{this.state.info[0][1]} </h2>
-                <h2>Last Name:{this.state.info[0][2]}</h2>
-                {followButton}
-            </div>
-        )
+    
+        return (
+          <div className="user">
+            <h1>Username: {this.state.checkUser}</h1>
+            <h2>First Name: {this.state.info[0][1]}</h2>
+            <h2>Last Name: {this.state.info[0][2]}</h2>
+            {followButton}
+          </div>
+        );
+      }
     }
-}
-
+    
 export default UserInfo;

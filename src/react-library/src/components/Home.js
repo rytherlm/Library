@@ -13,6 +13,11 @@ const Home = () => {
   const search = () => {
     navigate('/search');
   };
+
+  const friends = () => {
+    navigate('/friends');
+  };
+
   
 
   return (
@@ -21,6 +26,8 @@ const Home = () => {
       <button onClick={handleLogout}>Logout</button>
 
       <button onClick={search}>search</button>
+
+      <button onClick={friends}>friends</button>
     </div>
   );
 };

@@ -84,107 +84,36 @@ class Search extends Component
         Cookies.set("UserInfoName", name)
     }
 
-    render()
-    {
-        let attribute;
-        let sort;
-        if(this.state.searchType === "user"){
-            attribute = (
-                <select onChange = {this.changeAttributeType}>
-                    <option value = "username">Username</option>
-                    <option value = "email">Email</option>
-                </select>
-            )
-        }
-        else{
-            attribute = (
-                <select onChange = {this.changeAttributeType}>
-                    <option value = "title">Title</option>
-                    <option value = "releasedate">Release Date</option>
-                    <option value = "author">Author</option>
-                    <option value = "publisher">Publisher</option>
-                    <option value = "genre">Genre</option>
-                </select>
-            )
-        }
-        if(this.state.searchType === "book" && this.state.searched){
-            sort = (
-                <div>
-                    <label htmlFor="sort">Sort:</label>
-                    <select onChange = {this.changeSort}>
-                        <option value = "title">Title</option>
-                        <option value = "publisher">Publisher</option>
-                        <option value = "genre">Genre</option>
-                        <option value = "releasedate">Release Date</option>
-                    </select>
-                </div>
-            )
-        }
-        return(
+    render() {
+        return (
             <div className="search-container">
-            <form className="search-form" onSubmit={this.searchData}>
-              <h1>Search</h1>
-              <InputGroup className="search-input">
-                <Input onChange={this.changeSearch} />
-              </InputGroup>
-              <InputGroup className="search-select">
-                <select value={this.state.searchType} onChange={this.changeSearchType}>
-                  <option value="user">User</option>
-                  <option value="book">Book</option>
-                </select>
-                <div style={{ marginLeft: '10px' }}>
-                    {attribute}
+                <form className="search-form" onSubmit={this.searchData}>
+                    <h1>Search</h1>
+                    <InputGroup className="search-input">
+                        <Input onChange={this.changeSearch} />
+                    </InputGroup>
+                    <InputGroup className="search-select">
+                        <select value={this.state.searchType} onChange={this.changeSearchType}>
+                            <option value="user">User</option>
+                            <option value="book">Book</option>
+                        </select>
+                    </InputGroup>
+                    <Button className="search-button" type="submit">Search</Button>
+                </form>
+                <div className="search-result">
+                    {this.state.searchResult.map((item, index) => (
+                        <div key={index} className="search-result-item">
+                            <Link to={`/userinfo/${item[1]}`} className="link-no-underline" onClick={() => this.setUserInfo(item[1])}>
+                                <div>
+                                    <h3>{item[2]} {item[3]}</h3>
+                                    <h4>{item[1]}</h4> 
+                                </div>
+                            </Link>
+                        </div>
+                    ))}
                 </div>
-                <div style = {{ marginTop: '10px'}}>
-                    {sort}
-                </div>
-              </InputGroup>
-              <Button className="search-button" type="submit">Search</Button>
-            </form>
-            <div className="search-result">
-                <Container>
-                {this.state.searchResult.map((stuff, index) => {
-                    const currentUser = Cookies.get('username');
-                    if (this.state.searchType === "user"){
-                        if (stuff[1] !== currentUser) {
-                            return (
-                                <Row key={index}>
-                                    <Col className="mb-4">
-                                        <Link to={`/userinfo/${stuff[1]}`} className = "link-no-underline" onClick={() => this.setUserInfo(stuff[1])}>
-                                            <div className="search-result-item">
-                                                <h3>{stuff[1]}</h3>
-                                            </div>
-                                        </Link>
-                                        <h4>{stuff[2]} {stuff[3]}</h4>
-                                    </Col>
-                                </Row>
-                            );
-                        } else {
-                            return null; 
-                        }
-                    }
-                    else{
-                        return (
-                            <Row key={index}>
-                                <Col className="mb-4">
-                                    <Link to={`/userinfo/${stuff[1]}`} className = "link-no-underline">
-                                        <div className="search-result-item">
-                                            <h3>{stuff[1]}</h3>
-                                        </div>
-                                    </Link>
-                                    <h4>{stuff[5]} {stuff[6]}</h4>
-                                    <h4>{stuff[4]} - {stuff[3]} - {stuff[2]} Pages</h4>
-                                </Col>
-                            </Row>
-                        );
-                    }
-                })}
-                </Container>
-              
             </div>
-          </div>
-          
-        )
+        );
     }
 }
 
