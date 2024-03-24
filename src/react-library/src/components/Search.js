@@ -22,6 +22,7 @@ class Search extends Component
             searchResult: [],
             searchType: "user",
             attributeType: "username",
+            searched: false,
         }
     }
 
@@ -49,7 +50,7 @@ class Search extends Component
                     alert("No result.")
                 }
                 else{
-                    this.setState({searchResult: response.data});
+                    this.setState({searchResult: response.data, searched:true});
                     console.log(this.state.searchResult)
                 }
             }
@@ -86,6 +87,7 @@ class Search extends Component
     render()
     {
         let attribute;
+        let sort;
         if(this.state.searchType === "user"){
             attribute = (
                 <select onChange = {this.changeAttributeType}>
@@ -105,6 +107,19 @@ class Search extends Component
                 </select>
             )
         }
+        if(this.state.searchType === "book" && this.state.searched){
+            sort = (
+                <div>
+                    <label htmlFor="sort">Sort:</label>
+                    <select onChange = {this.changeSort}>
+                        <option value = "title">Title</option>
+                        <option value = "publisher">Publisher</option>
+                        <option value = "genre">Genre</option>
+                        <option value = "releasedate">Release Date</option>
+                    </select>
+                </div>
+            )
+        }
         return(
             <div className="search-container">
             <form className="search-form" onSubmit={this.searchData}>
@@ -120,6 +135,9 @@ class Search extends Component
                 <div style={{ marginLeft: '10px' }}>
                     {attribute}
                 </div>
+                <div style = {{ marginTop: '10px'}}>
+                    {sort}
+                </div>
               </InputGroup>
               <Button className="search-button" type="submit">Search</Button>
             </form>
@@ -132,7 +150,7 @@ class Search extends Component
                             return (
                                 <Row key={index}>
                                     <Col className="mb-4">
-                                        <Link to={`/userinfo/${stuff[1]}`} className = "link-no-underline" onClick={this.setUserInfo(stuff[1])}>
+                                        <Link to={`/userinfo/${stuff[1]}`} className = "link-no-underline" onClick={() => this.setUserInfo(stuff[1])}>
                                             <div className="search-result-item">
                                                 <h3>{stuff[1]}</h3>
                                             </div>
@@ -155,7 +173,7 @@ class Search extends Component
                                         </div>
                                     </Link>
                                     <h4>{stuff[5]} {stuff[6]}</h4>
-                                    <h4>- {stuff[4]}</h4>
+                                    <h4>{stuff[4]} - {stuff[3]} - {stuff[2]} Pages</h4>
                                 </Col>
                             </Row>
                         );
