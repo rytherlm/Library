@@ -22,7 +22,7 @@
 }
 
 .search-button {
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   background-color: #0073b1;
   color: white;
   border: none;
@@ -32,10 +32,8 @@
 }
 
 .search-result {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   width: 100%;
+  margin-top: 20px;
 }
 
 .search-result-item {
@@ -44,8 +42,11 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   padding: 1rem;
   margin: 0.5rem 0;
-  width: 300px;
+  width: 90%; 
+  cursor: pointer;
   transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .search-result-item:hover {
@@ -53,12 +54,10 @@
 }
 
 .search-result-item h3, .search-result-item h4 {
-  margin: 0;
+  margin: 5px 0; 
 }
 
 .link-no-underline {
   text-decoration: none;
   color: inherit;
 }
-
-

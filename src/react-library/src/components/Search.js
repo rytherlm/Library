@@ -85,6 +85,45 @@ class Search extends Component
     }
 
     render() {
+        const attributeOptions = this.state.searchType === "user" ? (
+            <>
+                <option value="username">Username</option>
+                <option value="email">Email</option>
+            </>
+        ) : (
+            <>
+                <option value="title">Title</option>
+                <option value="releasedate">Release Date</option>
+                <option value="author">Author</option>
+                <option value="publisher">Publisher</option>
+                <option value="genre">Genre</option>
+            </>
+        );
+    
+        const searchResults = this.state.searchResult.map((item, index) => {
+            const linkPath = this.state.searchType === "user" ? `/userinfo/${item[1]}` : `/bookinfo/${item[1]}`;
+            return (
+                <Link to={linkPath} className="link-no-underline" key={index} onClick={() => this.setUserInfo(item[1])}>
+                    <div className="search-result-item">
+                        {this.state.searchType === "user" ? (
+                            <>
+                                <h3>Username: {item[1]}</h3>
+                                <h4>Name: {item[2]} {item[3]}</h4>
+                            </>
+                        ) : (
+                            <>
+                                <h3>Title: {item[1]}</h3>
+                                <h4>Author: {item[5]} {item[6]}</h4>
+                                <h4>Publisher: {item[4]}</h4>
+                                <h4>Length: {item[3]} pages</h4>
+                                <h4>Genre: {item[2]}</h4>
+                            </>
+                        )}
+                    </div>
+                </Link>
+            );
+        });
+    
         return (
             <div className="search-container">
                 <form className="search-form" onSubmit={this.searchData}>
@@ -97,24 +136,17 @@ class Search extends Component
                             <option value="user">User</option>
                             <option value="book">Book</option>
                         </select>
+                        <select onChange={this.changeAttributeType} style={{ marginLeft: '10px' }}>
+                            {attributeOptions}
+                        </select>
                     </InputGroup>
                     <Button className="search-button" type="submit">Search</Button>
                 </form>
-                <div className="search-result">
-                    {this.state.searchResult.map((item, index) => (
-                        <div key={index} className="search-result-item">
-                            <Link to={`/userinfo/${item[1]}`} className="link-no-underline" onClick={() => this.setUserInfo(item[1])}>
-                                <div>
-                                    <h3>{item[2]} {item[3]}</h3>
-                                    <h4>{item[1]}</h4> 
-                                </div>
-                            </Link>
-                        </div>
-                    ))}
-                </div>
+                <Container className="search-result">{searchResults}</Container>
             </div>
         );
     }
-}
+    
+}    
 
 export default Search;
