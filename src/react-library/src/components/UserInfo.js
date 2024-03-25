@@ -24,7 +24,7 @@ class UserInfo extends Component
             const paramstwo = new URLSearchParams({currentuser: this.state.currentUser, checkuser: this.state.checkUser});
             const responsetwo = await axios.get(`http://localhost:5002/friends?${paramstwo.toString()}`);
             console.log(responsetwo.data)
-            if(responsetwo.data == null || responsetwo.data.length == 0){
+            if(responsetwo.data === null || responsetwo.data.length === 0){
                 this.setState({isFriends: false, info: response.data.data, dataLoaded:true})
             }
             else{
@@ -40,7 +40,7 @@ class UserInfo extends Component
             if(this.state.isFriends){
                 const paramstwo = new URLSearchParams({currentuser: this.state.currentUser, checkuser: this.state.checkUser});
                 const response = await axios.delete(`http://localhost:5002/friends?${paramstwo.toString()}`)
-                if(response.status == 200){
+                if(response.status === 200){
                     this.setState({isFriends: false})
                 }
             }
@@ -49,7 +49,7 @@ class UserInfo extends Component
                     currentuser: this.state.currentUser,
                     checkuser: this.state.checkUser
                 });
-                if(response.status == 200){
+                if(response.status === 200){
                     this.setState({isFriends: true})
                 }
             }

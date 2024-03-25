@@ -7,7 +7,7 @@
 
 // Users can follow another user. Users can search for new users to follow by email
 import {Component} from "react";
-import {InputGroup, Input, Button, Container, Row, Col} from 'reactstrap';
+import {InputGroup, Input, Button, Container} from 'reactstrap';
 import axios from "axios";
 import { Link } from "react-router-dom";
 import './styling/Search.css';
@@ -23,6 +23,8 @@ class Search extends Component
             searchType: "user",
             attributeType: "username",
             searched: false,
+            sort: "title",
+            ascending: true,
         }
     }
 
@@ -42,6 +44,7 @@ class Search extends Component
                 }
             }
             else{
+                this.setState({searched: false})
                 const params = new URLSearchParams();
                 params.append(this.state.attributeType, this.state.searchQuery);
                 const response = await axios.get(`http://localhost:5002/booksearch?${params.toString()}`);
@@ -51,7 +54,6 @@ class Search extends Component
                 }
                 else{
                     this.setState({searchResult: response.data, searched:true});
-                    console.log(this.state.searchResult)
                 }
             }
         } catch(error){
@@ -69,7 +71,7 @@ class Search extends Component
         else{
             this.setState({attributeType: "title"})
         }
-        this.setState({searchResult: []})
+        this.setState({searchResult: [], searched: false})
     }
 
     changeSearch = (e) => {
@@ -80,11 +82,82 @@ class Search extends Component
         this.setState({attributeType: e.target.value})
     }
 
+    changeSort = (e) => {
+        this.setState({ 
+            sort: e.target.value    
+        }, () => {
+            this.sortResult()
+        });
+    }
+
+    changeOrder = (e) => {
+        console.log(this.state.searchResult)
+        if(this.state.ascending){
+            this.setState({ascending: false
+            }, () => {
+                this.sortResult()
+            });
+        }
+        else{
+            this.setState({ascending: true
+            }, () => {
+                this.sortResult()
+            });
+        }
+    }
+
+    sortResult = () => {
+        console.log(this.state.ascending)
+        console.log(this.state.sort)
+        if(this.state.sort === "releasedate"){
+            const sortedByYear = [...this.state.searchResult].sort((a, b) => {
+                if(this.state.ascending === true)
+                    return a[4] - b[4];
+                else{
+                    return b[4] - a[4];
+                }
+            });
+            this.setState({searchResult: sortedByYear})
+        }
+        else if(this.state.sort === "title"){
+            const sortedByTitle = [...this.state.searchResult].sort((a, b) => {
+                if(this.state.ascending === true)
+                    return a[1].localeCompare(b[1]);
+                else{
+                    return b[1].localeCompare(a[1]);
+                }
+            });
+            this.setState({searchResult: sortedByTitle})
+        }
+        else if(this.state.sort === "publisher"){
+            const sortedByAuthorPublisher = [...this.state.searchResult].sort((a, b) => {
+                if(this.state.ascending === true)
+                    return a[5].localeCompare(b[5]);
+                else{
+                    return b[5].localeCompare(a[5]);
+                }
+            });
+            this.setState({searchResult: sortedByAuthorPublisher})
+        }
+        else if(this.state.sort === "genre"){
+            const sortedByGenre = [...this.state.searchResult].sort((a, b) => {
+                console.log(a[6])
+                if(this.state.ascending === true)
+                    return a[6].localeCompare(b[6]);
+                else{
+                    return b[6].localeCompare(a[6]);
+                }
+            });
+            this.setState({searchResult: sortedByGenre})
+        }
+    }
+
     setUserInfo = (name) => {
         Cookies.set("UserInfoName", name)
     }
 
     render() {
+        let sort;
         const attributeOptions = this.state.searchType === "user" ? (
             <>
                 <option value="username">Username</option>
@@ -99,28 +172,49 @@ class Search extends Component
                 <option value="genre">Genre</option>
             </>
         );
+        if(this.state.searchType === "book" && this.state.searched){
+            sort = (
+                <div style = {{marginTop: '10px'}}>
+                    <label htmlFor="sort">Sort:</label>
+                    <select onChange = {this.changeSort}>
+                        <option value = "title">Title</option>
+                        <option value = "publisher">Publisher</option>
+                        <option value = "genre">Genre</option>
+                        <option value = "releasedate">Release Date</option>
+                    </select>
+                    <select onChange = {this.changeOrder}>
+                        <option value = "ascending">Ascending</option>
+                        <option value = "descending">Descending</option>
+                    </select>
+                </div>
+            )
+        }
     
-        const searchResults = this.state.searchResult.map((item, index) => {
+            const searchResults = this.state.searchResult.map((item, index) => {
+            const isCurrentUser = item[1] === Cookies.get('username');
             const linkPath = this.state.searchType === "user" ? `/userinfo/${item[1]}` : `/bookinfo/${item[1]}`;
             return (
-                <Link to={linkPath} className="link-no-underline" key={index} onClick={() => this.setUserInfo(item[1])}>
-                    <div className="search-result-item">
-                        {this.state.searchType === "user" ? (
-                            <>
-                                <h3>Username: {item[1]}</h3>
-                                <h4>Name: {item[2]} {item[3]}</h4>
-                            </>
-                        ) : (
-                            <>
-                                <h3>Title: {item[1]}</h3>
-                                <h4>Author: {item[5]} {item[6]}</h4>
-                                <h4>Publisher: {item[4]}</h4>
-                                <h4>Length: {item[3]} pages</h4>
-                                <h4>Genre: {item[2]}</h4>
-                            </>
-                        )}
-                    </div>
-                </Link>
+                !isCurrentUser && (
+                    <Link to={linkPath} className="link-no-underline" key={index} onClick={() => this.setUserInfo(item[1])}>
+                        <div className="search-result-item">
+                            {this.state.searchType === "user" ? (
+                                <>
+                                    <h3>Username: {item[1]}</h3>
+                                    <h4>Name: {item[2]} {item[3]}</h4>
+                                </>
+                            ) : (
+                                <>
+                                    <h3>Title: {item[1]}</h3>
+                                    <h4>Author and Publisher: {item[5]} </h4>
+                                    <h4>Release Date: {item[4]}</h4>
+                                    <h4>Audience: {item[3]} </h4>
+                                    <h4>Length: {item[2]} pages</h4>
+                                    <h4>Genres: {item[6]}</h4>
+                                </>
+                            )}
+                        </div>
+                    </Link>
+                )
             );
         });
     
@@ -139,6 +233,7 @@ class Search extends Component
                         <select onChange={this.changeAttributeType} style={{ marginLeft: '10px' }}>
                             {attributeOptions}
                         </select>
+                        {sort}
                     </InputGroup>
                     <Button className="search-button" type="submit">Search</Button>
                 </form>

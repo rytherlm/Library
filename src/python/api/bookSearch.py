@@ -10,21 +10,31 @@ class BookSearch(Resource):
         for i, key in enumerate(request.args.keys()):
             value = request.args[key]
             if(key == "title"):
-                sql = """SELECT book.*, STRING_AGG(contributor.firstname || ' ' || contributor.lastname, ', ') AS contributors
-                FROM book, contributor, contribute 
+                sql = """SELECT book.*, 
+                STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
+                STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
+                FROM book, contributor, contribute, genres, bookgenre
                 WHERE LOWER(title) LIKE %s
                 AND book.bookid = contribute.bookid
                 AND contribute.contributorid = contributor.contributorid
+                AND bookgenre.bookid = book.bookid
+                AND bookgenre.genreid = genres.genreid
                 GROUP BY book.bookid
+                ORDER BY book.title ASC, book.releasedate ASC
                 """
                 params.append(f"%{value.lower()}%")
             elif(key == "releasedate"):
-                sql = """SELECT book.*, STRING_AGG(contributor.firstname || ' ' || contributor.lastname, ', ') AS contributors
-                FROM book, contributor, contribute 
+                sql = """SELECT book.*, 
+                STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
+                STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
+                FROM book, contributor, contribute, genres, bookgenre
                 WHERE releasedate = %s
                 AND book.bookid = contribute.bookid
                 AND contribute.contributorid = contributor.contributorid
-                GROUP BY book.bookid"""
+                AND bookgenre.bookid = book.bookid
+                AND bookgenre.genreid = genres.genreid
+                GROUP BY book.bookid
+                ORDER BY book.title ASC, book.releasedate ASC"""
                 params.append(value)
             elif(key == "author" or key == "publisher"):
                 sql = """SELECT contributorid FROM contributor WHERE
@@ -41,12 +51,18 @@ class BookSearch(Resource):
                     sql = "SELECT bookid FROM contribute WHERE contributorid = %s"
                     books = exec_get_all(sql, (contributor[0],))
                     for book in books:
-                        sql = """SELECT book.*, STRING_AGG(contributor.firstname || ' ' || contributor.lastname, ', ') AS contributors
-                        FROM book, contributor, contribute 
+                        sql = """SELECT book.*, 
+                        STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
+                        STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
+                        FROM book, contributor, contribute, genres, bookgenre
                         WHERE book.bookid = %s
                         AND book.bookid = contribute.bookid
                         AND contribute.contributorid = contributor.contributorid
-                        GROUP BY book.bookid"""
+                        AND bookgenre.bookid = book.bookid
+                        AND bookgenre.genreid = genres.genreid
+                        GROUP BY book.bookid
+                        ORDER BY book.title ASC, book.releasedate ASC
+                        """
                         result = exec_get_one(sql, (book[0],))
                         if(result is not None):
                             returnData.append(result)
@@ -59,12 +75,17 @@ class BookSearch(Resource):
                     sql = "SELECT bookid FROM bookgenre WHERE genreid = %s"
                     books = exec_get_all(sql, (genreid[0],))
                     for book in books:
-                        sql = """SELECT book.*, STRING_AGG(contributor.firstname || ' ' || contributor.lastname, ', ') AS contributors 
-                        FROM book, contributor, contribute 
+                        sql = """SELECT book.*, 
+                        STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
+                        STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
+                        FROM book, contributor, contribute, genres, bookgenre
                         WHERE book.bookid = %s
                         AND book.bookid = contribute.bookid
                         AND contribute.contributorid = contributor.contributorid
-                        GROUP BY book.bookid"""
+                        AND bookgenre.bookid = book.bookid
+                        AND bookgenre.genreid = genres.genreid
+                        GROUP BY book.bookid
+                        ORDER BY book.title ASC, book.releasedate ASC"""
                         result = exec_get_one(sql, (book[0],))
                         if(result is not None):
                             returnData.append(result)
