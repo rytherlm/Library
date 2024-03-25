@@ -1,0 +1,46 @@
+.user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+}
+  
+.user h1, .user h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+  
+.userButton {
+    padding: 0.8rem 1.5rem;
+    background-color: #0073b1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background-color: #0073b1 !important;
+    border-color: #0073b1 !important;
+}
+  
+.btn {
+    padding: 0.8rem 1.5rem !important;
+    font-size: 1rem !important;
+    border-radius: 5px !important;
+    cursor: pointer;
+    margin-top: 1rem;
+    display: block;
+}
+  
+
+.loading-message {
+    font-size: 1.5rem;
+    color: #0073b1;
+    margin-top: 2rem;
+    text-align: center;
+}
+  
