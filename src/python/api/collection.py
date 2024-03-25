@@ -23,23 +23,23 @@ class Collection(Resource):
     def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument('CollectionID', type=int, required=True)
-        parser.add_argument('UserID', type=int, required=True)
+        parser.add_argument('Username', required=True)
         parser.add_argument('CollectionName', required=True)
         args = parser.parse_args()
 
-        sql = "UPDATE Collection SET UserID = %s, CollectionName = %s WHERE CollectionID = %s"
-        if exec_commit(sql, (args['UserID'], args['CollectionName'], args['CollectionID'],)):
+        sql = "UPDATE Collection SET Username = %s, CollectionName = %s WHERE CollectionID = %s"
+        if exec_commit(sql, (args['Username'], args['CollectionName'], args['CollectionID'],)):
             return 200
         return 404
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('UserID', type=int, required=True)
+        parser.add_argument('Username', required=True)
         parser.add_argument('CollectionName', required=True)
         args = parser.parse_args()
 
-        sql = "INSERT INTO Collection (UserID, CollectionName) VALUES (%s, %s)"
-        if exec_commit(sql, (args['UserID'], args['CollectionName'],)):
+        sql = "INSERT INTO Collection (Username, CollectionName) VALUES (%s, %s)"
+        if exec_commit(sql, (args['Username'], args['CollectionName'],)):
             return 201,
         return 404
 
