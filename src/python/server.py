@@ -9,7 +9,8 @@ from api.utils import *
 from api.friends import Friends
 from api.author import Author
 from api.rating import BookRatings
-
+from api.collection import Collection
+from api.collectionSearch import CollectionSearch
 
 
 app = Flask(__name__) #create Flask instance
@@ -23,6 +24,8 @@ api.add_resource(UserSearch, '/usersearch')
 api.add_resource(Friends, '/friends')
 api.add_resource(Author, '/author')
 api.add_resource(BookRatings, '/rating')
+api.add_resource(Collection, '/collection')
+api.add_resource(CollectionSearch, '/collectionsearch')
 
 if __name__ == '__main__':
     print("Loading db")

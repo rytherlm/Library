@@ -18,6 +18,10 @@ const Home = () => {
     navigate('/friends');
   };
 
+  const collections = () => {
+    navigate('/allcollections');
+  };
+
   
 
   return (
@@ -28,6 +32,8 @@ const Home = () => {
       <button onClick={search}>search</button>
 
       <button onClick={friends}>friends</button>
+
+      <button onClick={collections}>collections</button>
     </div>
   );
 };
