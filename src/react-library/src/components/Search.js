@@ -23,6 +23,7 @@ class Search extends Component
             searchType: "user",
             attributeType: "username",
             searched: false,
+            searching: false,
             sort: "title",
             ascending: true,
         }
@@ -31,16 +32,17 @@ class Search extends Component
     searchData = async (e) => {
         e.preventDefault();
         try{
+            this.setState({searched: false, searching: true, searchResult: []})
             if(this.state.searchType === "user"){
                 const params = new URLSearchParams();
                 params.append(this.state.attributeType, this.state.searchQuery);                
                 const response = await axios.get(`http://localhost:5002/usersearch?${params.toString()}`);
                 if(response.data === null || response.data.length === 0){
-                    this.setState({searchResult: []})
+                    this.setState({searchResult: [], searching: false})
                     alert("No result.")
                 }
                 else{
-                    this.setState({searchResult: response.data});
+                    this.setState({searchResult: response.data, searched:true, searching: false});
                 }
             }
             else{
@@ -49,11 +51,11 @@ class Search extends Component
                 params.append(this.state.attributeType, this.state.searchQuery);
                 const response = await axios.get(`http://localhost:5002/booksearch?${params.toString()}`);
                 if(response.data === null || response.data.length === 0){
-                    this.setState({searchResult: []})
+                    this.setState({searchResult: [], searching:false})
                     alert("No result.")
                 }
                 else{
-                    this.setState({searchResult: response.data, searched:true});
+                    this.setState({searchResult: response.data, searched:true, searching: false});
                 }
             }
         } catch(error){
@@ -158,6 +160,7 @@ class Search extends Component
 
     render() {
         let sort;
+        let loading;
         const attributeOptions = this.state.searchType === "user" ? (
             <>
                 <option value="username">Username</option>
@@ -172,6 +175,11 @@ class Search extends Component
                 <option value="genre">Genre</option>
             </>
         );
+        if(this.state.searching){
+            loading = (
+                <h2>Loading...</h2>
+            )
+        }
         if(this.state.searchType === "book" && this.state.searched){
             sort = (
                 <div style = {{marginTop: '10px'}}>
@@ -192,6 +200,9 @@ class Search extends Component
     
             const searchResults = this.state.searchResult.map((item, index) => {
             const isCurrentUser = item[1] === Cookies.get('username');
+            const ratingValues = item[7];
+            const ratingCount = item[8];
+            const average = ratingCount != 0 ? ratingValues/ratingCount : "No data";
             const linkPath = this.state.searchType === "user" ? `/userinfo/${item[1]}` : `/bookinfo/${item[1]}`;
             return (
                 !isCurrentUser && (
@@ -210,6 +221,7 @@ class Search extends Component
                                     <h4>Audience: {item[3]} </h4>
                                     <h4>Length: {item[2]} pages</h4>
                                     <h4>Genres: {item[6]}</h4>
+                                    <h4>Rating: {average}</h4>
                                 </>
                             )}
                         </div>
@@ -238,6 +250,7 @@ class Search extends Component
                     <Button className="search-button" type="submit">Search</Button>
                 </form>
                 <Container className="search-result">{searchResults}</Container>
+                {loading}
             </div>
         );
     }
