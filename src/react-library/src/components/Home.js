@@ -18,15 +18,12 @@ const Home = () => {
     navigate('/friends');
   };
 
-  
 
   return (
     <div>
       <h1>Welcome Home, {username}</h1>
       <button onClick={handleLogout}>Logout</button>
-
       <button onClick={search}>search</button>
-
       <button onClick={friends}>friends</button>
     </div>
   );

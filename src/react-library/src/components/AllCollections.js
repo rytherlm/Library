@@ -7,7 +7,7 @@
 
 
 
-// Users can delete books from their collection.
+// Users can add and delete books from their collection.
 
 
 

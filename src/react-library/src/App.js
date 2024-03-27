@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Search from './components/Search';
 import UserInfo from './components/UserInfo';
 import Friends from './components/Friends';
+import Book from './components/Book';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="search" element={<Search/>} />
         <Route path="/userinfo/:username" element={<UserInfo />} />
         <Route path="/friends" element={<Friends/>}/>
+        <Route path="/bookinfo/:bookName" element={<Book />}/>
       </Routes>
     </Router>
   );
