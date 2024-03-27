@@ -103,4 +103,5 @@ class BookSearch(Resource):
                             returnData.append(result)
                 return returnData
         result = exec_get_all(sql, params)
+        print(result)
         return result
