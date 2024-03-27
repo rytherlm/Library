@@ -154,8 +154,13 @@ class Search extends Component
         }
     }
 
-    setUserInfo = (name) => {
-        Cookies.set("UserInfoName", name)
+    setInfo = (name) => {
+        if(this.state.searchType === "user"){
+            Cookies.set("UserInfoName", name)
+        }
+        else {
+            Cookies.set("BookInfoName", name)
+        }
     }
 
     render() {
@@ -206,7 +211,7 @@ class Search extends Component
             const linkPath = this.state.searchType === "user" ? `/userinfo/${item[1]}` : `/bookinfo/${item[1]}`;
             return (
                 !isCurrentUser && (
-                    <Link to={linkPath} className="link-no-underline" key={index} onClick={() => this.setUserInfo(item[1])}>
+                    <Link to={linkPath} className="link-no-underline" key={index} onClick={() => this.setInfo(item[1])}>
                         <div className="search-result-item">
                             {this.state.searchType === "user" ? (
                                 <>

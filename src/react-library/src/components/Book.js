@@ -206,7 +206,7 @@ class Book extends Component
 
     componentDidMount = () => {
         this.setState({ 
-            bookname: Cookies.get('UserInfoName'),
+            bookname: Cookies.get('BookInfoName'),
             currentUser: Cookies.get('username')
         }, () => {
             this.getBookInfo();
@@ -221,8 +221,7 @@ class Book extends Component
         let saveButtonTracking = (
             <Button className="button" type="submit" onClick={this.saveTrackingClick}>Save Tracking</Button>
         );
-    
-        
+
         let createSection;
             createSection = (
                 <Button className="button" type="submit" onClick={() => this.createSectionClick}>Create Section</Button>
@@ -233,6 +232,13 @@ class Book extends Component
                     <div className="loading-message">Loading...</div>
                 </div>
             );
+        }
+        let rating;
+        if(this.state.averageRating === -1){
+            rating = "No Results"
+        }
+        else{
+            rating = parseFloat(this.state.averageRating).toFixed(1)
         }
 
         const sectionList = this.state.sections.map((item, index) => (
@@ -251,7 +257,7 @@ class Book extends Component
                     <h4>Publisher: {this.state.info[0][4]}</h4>
                     <h4>Length: {this.state.info[0][3]} pages</h4>
                     <h4>Genre: {this.state.info[0][2]}</h4>
-                    <h4>Average Rating: {parseFloat(this.state.averageRating).toFixed(1)}</h4>
+                    <h4>Average Rating: {rating}</h4>
                     <InputGroup className="input-group">
                         <select className="input-group" value={this.state.userRating} onChange={this.changeRating}>
                             <option value="1">1</option>

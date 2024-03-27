@@ -21,7 +21,13 @@ class Book(Resource):
             else:
                 return 404
         elif name is not None:
-            sql = "SELECT * FROM Book WHERE title LIKE %s"
+            sql = """SELECT Book.*, contributor.firstname, contributor.lastname 
+            FROM Book, contributor, author, contribute
+            WHERE title LIKE %s
+            AND book.bookid = contribute.bookid
+            AND contribute.contributorid = contributor.contributorid
+            AND contributor.contributorid = author.contributorid
+            """
             result = exec_get_all(sql, (f"%{name}%",))
             if result:
                 return {"data": result}, 200
