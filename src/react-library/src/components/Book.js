@@ -9,9 +9,9 @@
 import {Component} from "react";
 import {InputGroup, Input, Button, Container, Row, Col} from 'reactstrap';
 import axios from "axios";
-import { Link } from "react-router-dom";
 import './styling/Search.css';
 import Cookies from "js-cookie";
+
 
 class Book extends Component
 {
@@ -29,8 +29,12 @@ class Book extends Component
             progress: "Loading...",
             currentProgress: "",
             status: "Unread",
-            tracked: false
-
+            tracked: false,
+            sections: [],
+            starttime: '',
+            endtime: '',
+            startpage: '',
+            endpage: '',
         }
     }
     getBookInfo = async (e) => {
@@ -42,9 +46,8 @@ class Book extends Component
             this.updateAverageRating()
             const paramtwo = new URLSearchParams({Username: this.state.currentUser, Bookname: this.state.bookname})
             const respontwo = await axios.get(`http://localhost:5002/rating?${paramtwo.toString()}`);
-            this.setState({currentRating: respontwo.data.rating, userRating: respontwo.data.rating, dataLoaded:true})
-            const paramthree = new URLSearchParams({Username: this.state.currentUser, Bookname: this.state.bookname})    
-            const responthree = await axios.get(`http://localhost:5002/track?${paramthree.toString()}`);
+            this.setState({currentRating: respontwo.data.rating, userRating: respontwo.data.rating})   
+            const responthree = await axios.get(`http://localhost:5002/track?${paramtwo.toString()}`);
             console.log(responthree.data)
             if (responthree.data === 404){
                 this.setState({progress: 0, status: "Unread"})
@@ -52,7 +55,10 @@ class Book extends Component
             }
             else{
                 this.setState({progress: responthree.data.progress, status: responthree.data.status, tracked: true})
-        }
+            }
+            const responsefour = await axios.get (`http://localhost:5002/section?${paramtwo.toString()}`);
+            this.setState({sections: responsefour.data, dataLoaded:true})
+            console.log(this.state.sections)
         }
         catch(error){
             console.log(error)
@@ -84,20 +90,35 @@ class Book extends Component
     changeStatus = async (e) => {
         this.setState({status: e.target.value})
     }
-
+    changeStartTime= async (e) => {
+        console.log(e.target.value)
+        this.setState({starttime: e.target.value})
+    }
+    changeEndTime = async(e) =>{
+        console.log(e.target.value)
+        this.setState({endtime: e.target.value})
+    }
+    changeStartPage = async (e) => {
+        console.log(e.target.value)
+        this.setState({startpage: e.target.value})
+    }
+    changeEndPage = async(e) =>{
+        console.log(e.target.value)
+        this.setState({endpage: e.target.value})
+    }
     saveRatingClick = async () => {
         try{
             if(this.state.currentRating === 0){
                 const paramstwo = new URLSearchParams({Bookname: this.state.bookname,
                     Username: this.state.currentUser,
                     rating: this.state.userRating,});
-                const response = await axios.post(`http://localhost:5002/rating?${paramstwo.toString()}`)     
+                await axios.post(`http://localhost:5002/rating?${paramstwo.toString()}`)     
             }
             else {
                 const paramstwo = new URLSearchParams({Bookname: this.state.bookname,
                     Username: this.state.currentUser,
                     rating: this.state.userRating,});
-                const response = await axios.put(`http://localhost:5002/rating?${paramstwo.toString()}`)
+                await axios.put(`http://localhost:5002/rating?${paramstwo.toString()}`)
             }
             this.updateAverageRating()
 
@@ -109,6 +130,10 @@ class Book extends Component
 
     saveTrackingClick= async () => {
         try{
+            if (this.state.currentProgress === ""){
+                alert("Please fill in a page number before submiting");
+                return;
+            }
             if(!this.state.tracked){
                 const params = new URLSearchParams({Bookname: this.state.bookname,
                     Username: this.state.currentUser,
@@ -127,7 +152,45 @@ class Book extends Component
             console.log(error)
         }
     }
+    
+    createSectionClick = async(e) => {
+        e.preventDefault();
 
+        if (! this.state.startpage || ! this.state.endpage || ! this.state.starttime|| ! this.state.endtime){
+            alert("Please fill in all fields for section"); 
+        }
+        else {
+            try {
+                const [hours,minutes]= this.state.starttime.split(':').map(num => parseFloat(num,10));
+                const start = new Date()
+                start.setHours(hours)
+                start.setMinutes(minutes)
+                const [hours2,minutes2]= this.state.starttime.split(':').map(num => parseFloat(num,10));
+                const end = new Date()
+                start.setHours(hours2)
+                start.setMinutes(minutes2)
+                const timestart = start.toTimeString().slice(0, 8)
+                const timeend= end.toTimeString().slice(0, 8)
+                console.log(timestart)
+                const params = new URLSearchParams({Username: this.state.currentUser,
+                    Bookname: this.state.bookname,
+                    StartTime: timestart,
+                    EndTime: timeend,
+                    StartPage: this.state.startpage,
+                    EndPage: this.state.endpage})
+                console.log(params)    
+                const result = await axios.post(`http://localhost:5002/section?${params.toString()}`);
+                console.log(result.status)
+                const paramtwo = new URLSearchParams({Username: this.state.currentUser, Bookname: this.state.bookname})
+                const responsefour = await axios.get(`http://localhost:5002/section?${paramtwo.toString()}`);
+                this.setState({sections: responsefour.data.data})
+            } catch (error) {
+                alert("Failed to create new section")
+                console.log(error)
+            }
+        }
+    }
+    
 
     updateTracking = async (e) => {
         try{
@@ -153,22 +216,39 @@ class Book extends Component
     render() {
         let saveButtonRating;
         saveButtonRating = (
-            <Button type="submit" onClick={() => this.saveRatingClick()}>Save rating</Button>
+            <Button type="submit" onClick={() => this.saveRatingClick()}>Save Rating</Button>
         );
         let saveButtonTracking;
             saveButtonTracking = (
-              <Button type="submit" onClick={() => this.saveTrackingClick()}>Save status</Button>
+              <Button type="submit" onClick={() => this.saveTrackingClick()}>Save Tracking</Button>
         );
+        
+        let createSection;
+            createSection = (
+                <Button type="submit" onClick={() => this.createSectionClick}>Create Section</Button>
+            );
         if (!this.state.dataLoaded || this.state.progress==="Loading...") {
           return (
-            <div className="book">
+            <div>
                 <div className="loading-message">Loading...</div>
             </div>
           );
         }
-    
+
+        const sectionList = this.state.sections?.map((item) => {
+            return (
+                    <div >
+                        <h4>Start time: {item[0]}</h4>
+                        <h4>End time: {item[1]}</h4>
+                        <h4>Start page: {item[2]} to End page: {item[3]}</h4>
+                        <br></br>
+                    </div>
+            );
+        });
+
         return (
-          <div className="book">
+          <div>
+            <div>
             <h3>Title: {this.state.info[0][1]}</h3>
             <h4>Author: {this.state.info[0][5]} {this.state.info[0][6]}</h4>
             <h4>Publisher: {this.state.info[0][4]}</h4>
@@ -176,31 +256,56 @@ class Book extends Component
             <h4>Genre: {this.state.info[0][2]}</h4>
             <h4>Average Rating: {this.state.averageRating}</h4>
             <InputGroup><h4>Your rating: 
-                    <select value ={this.state.userRating} onChange={this.changeRating}>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    </select>
-                    </h4>
+                <select value ={this.state.userRating} onChange={this.changeRating}>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                </select>
+                </h4>
             </InputGroup>
             {saveButtonRating}
-            <h3>Tracking</h3>
-            <h4>Current progress page: {this.state.progress}</h4>
-            <h4>New progress page: <InputGroup>
-            <Input onChange={this.changeProgress}/>
-            </InputGroup></h4> 
-            <InputGroup><h4>Status:
+            </div>
+            <div>
+                <h3>Tracking</h3>
+                <h4>Current progress page: {this.state.progress}</h4>
+                <h4>New progress page: <InputGroup>
+                <Input onChange={this.changeProgress}/>
+                </InputGroup></h4> 
+                <InputGroup><h4>Status:
                     <select value ={this.state.status} onChange={this.changeStatus}>
                     <option value="Unread">Unread</option>
                     <option value="Reading">Reading</option>
                     <option value="Read">Read</option>
                     </select>
                     </h4>
-            </InputGroup>
-            {saveButtonTracking}
+                    </InputGroup>
+                    {saveButtonTracking}
             </div>
+            <div>
+                <h4>Create new section</h4>
+                <form onSubmit={this.createSectionClick}>
+                    <h4>Start time: <InputGroup>
+                    <Input onChange={this.changeStartTime}/>
+                    </InputGroup></h4> 
+                    <h4>End time:<InputGroup>
+                    <Input onChange={this.changeEndTime}/>
+                    </InputGroup></h4> 
+                    <h4>Start page:<InputGroup>
+                    <Input onChange={this.changeStartPage}/>
+                    </InputGroup></h4> 
+                    <h4>End page:<InputGroup>
+                    <Input onChange={this.changeEndPage}/>
+                    </InputGroup></h4>
+                    {createSection}
+                </form>
+                <h4>Your Sections</h4>
+                    <Container>{sectionList}</Container>
+            </div>
+            
+            </div>
+            
         );
 
         
