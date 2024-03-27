@@ -5,20 +5,18 @@ from flask_restful import reqparse
 from .utils import *
 
 class Author(Resource):
-    def get(self, contributor_id=None):
-        if contributor_id is not None:
-            sql = "SELECT * FROM Author WHERE ContributorID = %s"
-            result = exec_get_one(sql, (contributor_id,))
-            if result:
-                return result, 200
-            else:
-                return {}, 404
-        else:
-            sql = "SELECT * FROM Author"
-            result = exec_get_all(sql)
-            if result:
-                return result, 200
-            return [], 200
+    def get(self):
+        value = request.args.get("bookid")
+        sql = "SELECT contributorid FROM contribute WHERE bookid = %s"
+        contributors = exec_get_all(sql, (value,))
+        for contributor in contributors:
+            check = exec_get_one("SELECT contributorid FROM author WHERE contributorid = %s", (contributor[0],))
+            if check is None:
+                continue
+            sql = "SELECT firstname, lastname FROM contributor WHERE contributorid = %s"
+            result = exec_get_one(sql, (check[0],))
+            return {"bookid": value, "authorname": result[0]+result[1]}
+
 
     def put(self):
         parser = reqparse.RequestParser()

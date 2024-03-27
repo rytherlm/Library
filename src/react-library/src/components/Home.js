@@ -10,10 +10,24 @@ const Home = () => {
     navigate('/login');
   };
 
+  const search = () => {
+    navigate('/search');
+  };
+
+  const friends = () => {
+    navigate('/friends');
+  };
+
+  
+
   return (
     <div>
       <h1>Welcome Home, {username}</h1>
       <button onClick={handleLogout}>Logout</button>
+
+      <button onClick={search}>search</button>
+
+      <button onClick={friends}>friends</button>
     </div>
   );
 };
