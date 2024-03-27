@@ -9,8 +9,9 @@
 import {Component} from "react";
 import {InputGroup, Input, Button, Container, Row, Col} from 'reactstrap';
 import axios from "axios";
-import './styling/Search.css';
+// import './styling/Search.css';
 import Cookies from "js-cookie";
+import './styling/Book.css'
 
 
 class Book extends Component
@@ -214,102 +215,89 @@ class Book extends Component
 
     
     render() {
-        let saveButtonRating;
-        saveButtonRating = (
-            <Button type="submit" onClick={() => this.saveRatingClick()}>Save Rating</Button>
+        let saveButtonRating = (
+            <Button className="button" type="submit" onClick={this.saveRatingClick}>Save Rating</Button>
         );
-        let saveButtonTracking;
-            saveButtonTracking = (
-              <Button type="submit" onClick={() => this.saveTrackingClick()}>Save Tracking</Button>
+        let saveButtonTracking = (
+            <Button className="button" type="submit" onClick={this.saveTrackingClick}>Save Tracking</Button>
         );
+    
         
         let createSection;
             createSection = (
-                <Button type="submit" onClick={() => this.createSectionClick}>Create Section</Button>
+                <Button className="button" type="submit" onClick={() => this.createSectionClick}>Create Section</Button>
             );
-        if (!this.state.dataLoaded || this.state.progress==="Loading...") {
-          return (
-            <div>
-                <div className="loading-message">Loading...</div>
-            </div>
-          );
+        if (!this.state.dataLoaded || this.state.progress === "Loading...") {
+            return (
+                <div className="book-container">
+                    <div className="loading-message">Loading...</div>
+                </div>
+            );
         }
 
-        const sectionList = this.state.sections?.map((item) => {
-            return (
-                    <div >
-                        <h4>Start time: {item[0]}</h4>
-                        <h4>End time: {item[1]}</h4>
-                        <h4>Start page: {item[2]} to End page: {item[3]}</h4>
-                        <br></br>
-                    </div>
-            );
-        });
+        const sectionList = this.state.sections.map((item, index) => (
+            <div className="section-item" key={index}>
+                <h4>Start time: {item[0]}</h4>
+                <h4>End time: {item[1]}</h4>
+                <h4>Start page: {item[2]} to End page: {item[3]}</h4>
+            </div>
+        ));
 
         return (
-          <div>
-            <div>
-            <h3>Title: {this.state.info[0][1]}</h3>
-            <h4>Author: {this.state.info[0][5]} {this.state.info[0][6]}</h4>
-            <h4>Publisher: {this.state.info[0][4]}</h4>
-            <h4>Length: {this.state.info[0][3]} pages</h4>
-            <h4>Genre: {this.state.info[0][2]}</h4>
-            <h4>Average Rating: {this.state.averageRating}</h4>
-            <InputGroup><h4>Your rating: 
-                <select value ={this.state.userRating} onChange={this.changeRating}>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                </select>
-                </h4>
-            </InputGroup>
-            {saveButtonRating}
-            </div>
-            <div>
-                <h3>Tracking</h3>
-                <h4>Current progress page: {this.state.progress}</h4>
-                <h4>New progress page: <InputGroup>
-                <Input onChange={this.changeProgress}/>
-                </InputGroup></h4> 
-                <InputGroup><h4>Status:
-                    <select value ={this.state.status} onChange={this.changeStatus}>
-                    <option value="Unread">Unread</option>
-                    <option value="Reading">Reading</option>
-                    <option value="Read">Read</option>
-                    </select>
-                    </h4>
+            <div className="book-container">
+                <div className="book-info">
+                    <h3>Title: {this.state.info[0][1]}</h3>
+                    <h4>Author: {this.state.info[0][5]} {this.state.info[0][6]}</h4>
+                    <h4>Publisher: {this.state.info[0][4]}</h4>
+                    <h4>Length: {this.state.info[0][3]} pages</h4>
+                    <h4>Genre: {this.state.info[0][2]}</h4>
+                    <h4>Average Rating: {parseFloat(this.state.averageRating).toFixed(1)}</h4>
+                    <InputGroup className="input-group">
+                        <select className="input-group" value={this.state.userRating} onChange={this.changeRating}>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
                     </InputGroup>
+                    {saveButtonRating}
+                </div>
+                <div className="tracking-info">
+                    <h3>Tracking</h3>
+                    <h4>Current progress page: {this.state.progress}</h4>
+                    <InputGroup className="input-group">
+                        <Input onChange={this.changeProgress} />
+                    </InputGroup>
+                    <h4>Status:
+                        <select className="input-group" value={this.state.status} onChange={this.changeStatus}>
+                            <option value="Unread">Unread</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Read">Read</option>
+                        </select>
+                    </h4>
                     {saveButtonTracking}
+                </div>
+                <div className="section-creation-form">
+                    <form onSubmit={this.createSectionClick}>
+                        <InputGroup className="input-group">
+                            <Input onChange={this.changeStartTime} placeholder="Start Time" />
+                        </InputGroup>
+                        <InputGroup className="input-group">
+                            <Input onChange={this.changeEndTime} placeholder="End Time" />
+                        </InputGroup>
+                        <InputGroup className="input-group">
+                            <Input onChange={this.changeStartPage} placeholder="Start Page" />
+                        </InputGroup>
+                        <InputGroup className="input-group">
+                            <Input onChange={this.changeEndPage} placeholder="End Page" />
+                        </InputGroup>
+                        {createSection}
+                    </form>
+                </div>
             </div>
-            <div>
-                <h4>Create new section</h4>
-                <form onSubmit={this.createSectionClick}>
-                    <h4>Start time: <InputGroup>
-                    <Input onChange={this.changeStartTime}/>
-                    </InputGroup></h4> 
-                    <h4>End time:<InputGroup>
-                    <Input onChange={this.changeEndTime}/>
-                    </InputGroup></h4> 
-                    <h4>Start page:<InputGroup>
-                    <Input onChange={this.changeStartPage}/>
-                    </InputGroup></h4> 
-                    <h4>End page:<InputGroup>
-                    <Input onChange={this.changeEndPage}/>
-                    </InputGroup></h4>
-                    {createSection}
-                </form>
-                <h4>Your Sections</h4>
-                    <Container>{sectionList}</Container>
-            </div>
-            
-            </div>
-            
         );
-
-        
-      }
+    }
 
 
 
