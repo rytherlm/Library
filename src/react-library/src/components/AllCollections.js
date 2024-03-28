@@ -1,10 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {useNavigate, Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './styling/AllCollections.css';
 import Cookies from 'js-cookie';
-import { Container, Input, InputGroup } from 'reactstrap';
-
 // Users will be to see the list of all their collections by name in ascending order. The list
 // must show the following information per collection:
 // – Collection’s name
@@ -16,35 +14,34 @@ import { Container, Input, InputGroup } from 'reactstrap';
 //  Users can modify the name of a collection. They can also delete an entire collection
 const AllCollections = () => {
     const [collectionName, setCollectionName] = useState('');
-    var collectionId = 0;
     var username = Cookies.get('username');
     const [myCollections, setMyCollections] = useState([]);
+    const [renameInputs, setRenameInputs] = useState({}); 
+
     const listCollections = async (e) => {
-        try{
+        try {
             const params = new URLSearchParams();
             params.append('username', Cookies.get('username'));
             const result = await axios.get(`http://localhost:5002/collectionsearch?${params.toString()}`);
-            console.log(result.status);
             if (result.status === 200) {
                 setMyCollections(result.data);
-                console.log(result.data);
-                console.log(myCollections);
+                const initialRenameInputs = result.data.reduce((acc, item) => ({ ...acc, [item[0]]: '' }), {});
+                setRenameInputs(initialRenameInputs);
             }
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 alert('No results.');
             }
         }
-    }
-    window.onload = listCollections;
+    };
+
+    useEffect(() => {
+        listCollections();
+    }, []); 
+
     const createCollection = async (e) => {
         e.preventDefault();
-
-// Users can add and delete books from their collection.
-
-
-        if(!collectionName)
-        {
+        if (!collectionName) {
             alert("Please fill in all fields.");
             return;
         }
@@ -54,83 +51,67 @@ const AllCollections = () => {
                 Username: username,
                 CollectionName: collectionName,
             });
-            console.log(result.status);
-            if(result.status === 200)
-            {
-                listCollections(e);
+            if (result.status === 200) {
+                listCollections();
             }
         } catch (error) {
             console.error('Collection creation failed: ', error);
         }
     };
-    const deleteCollection = (id) => {
-        collectionId = id;
-        deleteC();
-    }
-    const deleteC = async(e) => {        
-        const params = new URLSearchParams({"CollectionID": collectionId});
-        console.log(collectionId);
-        const result = await axios.delete(`http://localhost:5002/collection?${params.toString()}`);
-            console.log(result.data);
-            if(result.data === 200)
-            {
-                listCollections();
-            }
-    }
-    const renameCollection = async(e) => {
-        console.log(collectionId);
+
+    const deleteCollection = async (id) => {
         try {
-        const result = await axios.put('http://localhost:5002/collection?', {
-            Username: username,
-            CollectionID: collectionId,
-            CollectionName: collectionName
-        }
-        );
-        console.log(result.data);
-        if(result.data === 200)
-            {   
+            const result = await axios.delete(`http://localhost:5002/collection?CollectionID=${id}`);
+            if (result.data === 200) {
                 listCollections();
             }
-    } catch (error) {
-        console.error('Collection rename failed: ', error);
+        } catch (error) {
+            console.error('Error deleting collection: ', error);
+        }
     }
-            
+
+    const renameCollection = async (id, newName) => {
+        try {
+            const result = await axios.put('http://localhost:5002/collection?', {
+                Username: username,
+                CollectionID: id,
+                CollectionName: newName
+            });
+            if (result.data === 200) {
+                listCollections();
+            }
+        } catch (error) {
+            console.error('Collection rename failed: ', error);
+        }
     }
-    const rename = (id) => {
-        collectionId = id;
-        renameCollection();
+
+    const handleRenameChange = (id, newName) => {
+        setRenameInputs({ ...renameInputs, [id]: newName });
     }
-    const setCollectionInfo = (id) => {
-        Cookies.set("collectionId", id)
-    }
+
     const collection_list = myCollections.map((item, index) => {
-        const linkPath = `/collections/${item[0]}`;
         return (
-            <div class="list">
-            <Link to={linkPath} className="link-no-underline" key={index} onClick={() => setCollectionInfo(item[0])}>
-                <div class="list-item">
-                    {
-                    <>
+            <div className="list" key={index}>
+                <Link to={`/collections/${item[0]}`} className="link-no-underline" onClick={() => Cookies.set("collectionId", item[0])}>
+                    <div className="list-item">
                         <h3>CollectionName: {item[1]}</h3>
                         <h4>Books: {item[2]}</h4>
-                        <h4>Pages: 0{item[3]}</h4>
-                        
-                    </>
-                    }
-                </div>
-            </Link>
+                        <h4>Pages: {item[3]}</h4>
+                    </div>
+                </Link>
                 <input
                     type="text"
                     placeholder="Collection Rename"
-                    value={collectionName}
-                    onChange={(e) => setCollectionName(e.target.value)}
+                    value={renameInputs[item[0]] || ''}
+                    onChange={(e) => handleRenameChange(item[0], e.target.value)}
                 />
-                <button onClick={() => {rename(item[0])}}>Rename Collection</button>
-            <button onClick={() => {deleteCollection(item[0])}}>Remove</button>
+                <button onClick={() => renameCollection(item[0], renameInputs[item[0]])}>Rename Collection</button>
+                <button onClick={() => deleteCollection(item[0])}>Remove</button>
             </div>
         );
     });
-    return(
+
+    return (
         <div className='collections'>
             <div className='list-collections'>
                 <h1>Collections</h1>
