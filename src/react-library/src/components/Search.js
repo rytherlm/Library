@@ -207,6 +207,10 @@ class Search extends Component
             const isCurrentUser = item[1] === Cookies.get('username');
             const ratingValues = item[7];
             const ratingCount = item[8];
+            const contributors = item[5];
+            const contributor = contributors.split(',');
+            const author = contributor[0].trim();
+            const publisher = contributor.slice(1).join(',').trim();
             const average = ratingCount != 0 ? ratingValues/ratingCount : "No data";
             const linkPath = this.state.searchType === "user" ? `/userinfo/${item[1]}` : `/bookinfo/${item[1]}`;
             return (
@@ -217,11 +221,13 @@ class Search extends Component
                                 <>
                                     <h3>Username: {item[1]}</h3>
                                     <h4>Name: {item[2]} {item[3]}</h4>
+                                    <h4>Email: {item[4]}</h4>
                                 </>
                             ) : (
                                 <>
                                     <h3>Title: {item[1]}</h3>
-                                    <h4>Author and Publisher: {item[5]} </h4>
+                                    <h4>Author: {author} </h4>
+                                    <h4>Publisher: {publisher}</h4>
                                     <h4>Release Date: {item[4]}</h4>
                                     <h4>Audience: {item[3]} </h4>
                                     <h4>Length: {item[2]} pages</h4>
