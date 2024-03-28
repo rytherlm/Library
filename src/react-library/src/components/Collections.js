@@ -16,7 +16,8 @@ class Collections extends Component
             collectionName: "",
             collectionId: Cookies.get("collectionId"),
             books: [],
-            book0: "",
+            book0: [],
+            book0path: "",
             isUsers: false,
             bookId: 0,
             randomPath: "",
@@ -40,7 +41,8 @@ class Collections extends Component
             else{
                 this.setState({books: result2.data});
                 this.setState({collectionName: result.data[2]})
-                this.state.book0 = result2.data[0][1];
+                this.state.book0 = result2.data[0];
+                this.state.book0path = '/bookinfo/' +result2.data[0][1];
             }
             
         } catch(error){
@@ -72,8 +74,11 @@ class Collections extends Component
         const params = new URLSearchParams({"CollectionID": this.state.collectionId});
         const result = await axios.get(`http://localhost:5002/random?${params.toString()}`);
         this.setState({randomBook: result.data});
-        this.state.randomPath = `/bookinfo/${this.state.randomBook[1]}`;
+        this.state.randomPath = '/bookinfo/' + result.data[1];
         this.getCollectionInfo();
+    }
+    setBookInfo = (name) => {
+        Cookies.set("BookInfoName", name);
     }
     render() {
         try{
@@ -82,7 +87,7 @@ class Collections extends Component
                 if(index > 0){
                 return (
                     <div class="list-item">
-                        <Link to={linkPath} className="link-no-underline" key={index}>
+                        <Link to={linkPath} className="link-no-underline" key={index} onClick={() => {this.setBookInfo(item[1])}}>
                             <h4>Title: {item[1]}</h4>
                         </Link>
                         <button onClick={() => {this.setBook(item[0])}}>Remove</button>
@@ -91,8 +96,8 @@ class Collections extends Component
                 else{
                     return (
                         <div class="list-item">
-                            <Link to={linkPath} className="link-no-underline" key={index}>
-                                <h4>Title: {this.state.book0}</h4>
+                            <Link to={this.state.book0path} className="link-no-underline" key={index} onClick={() => {this.setBookInfo(this.state.book0[1])}}>
+                                <h4>Title: {this.state.book0[1]}</h4>
                             </Link>
                             <button onClick={() => {this.setBook(item[0])}}>Remove</button>
                         </div>
@@ -112,7 +117,7 @@ class Collections extends Component
                     <div class="random">
                         <button onClick={this.getRandom}>Get random book</button>
                         <div class="list-item">
-                        <Link to={this.state.randomPath} className="link-no-underline">
+                        <Link to={this.state.randomPath} className="link-no-underline" onClick={() => {this.setBookInfo(this.state.randomBook[1])}}>
                             <h4>Title: {this.state.randomBook[1]}</h4>
                         </Link>
                     </div>
