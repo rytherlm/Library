@@ -45,13 +45,13 @@ class Stores(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('CollectionID', type=int, required=True)
-        parser.add_argument('BookID', type=int, required=True)
+        parser.add_argument('CollectionID', required=True)
+        parser.add_argument('BookID', required=True)
         args = parser.parse_args()
 
         sql = "INSERT INTO Stores (CollectionID, BookID) VALUES (%s, %s)"
-        if exec_commit(sql, (args['CollectionID'], args['BookID'])):
-            return 201,
+        exec_commit(sql, (args['CollectionID'], args['BookID']))
+        return 201,
         return 404
 
     def delete(self):

@@ -21,6 +21,9 @@ class Book extends Component
         this.state = {
             currentUser: "",
             bookname: "",
+            bookid: 0,
+            collections: [],
+            collection: 0,
             info: [],
             userBookInfo: [],
             dataLoaded: false,
@@ -44,6 +47,7 @@ class Book extends Component
         try{
             const params = new URLSearchParams({title: this.state.bookname});
             const response = await axios.get(`http://localhost:5002/booksearch?${params.toString()}`);
+            this.state.bookid = response.data[0][0];
             this.setState({ info: response.data})
             this.updateAverageRating()
             const paramtwo = new URLSearchParams({Username: this.state.currentUser, Bookname: this.state.bookname})
@@ -217,9 +221,36 @@ class Book extends Component
             currentUser: Cookies.get('username')
         }, () => {
             this.getBookInfo();
+            this.getCollections();
         });
     }
-
+    addBook = async(e) =>{
+        var element = document.querySelector('#addcol');
+        this.state.collection = element.value;
+        /*const params = new URLSearchParams();
+        params.append('CollectionID', this.state.collection);
+        params.append('BookID', this.state.bookid);
+        console.log(params.toString());
+        const result = await axios.post(`http://localhost:5002/stores?${params.toString()}`);*/
+        const result = await axios.post('http://localhost:5002/stores', {
+            CollectionID: this.state.collection,
+            BookID: this.state.bookid,
+        })
+    }
+    getCollections = async(e) =>{
+        try{
+            const params = new URLSearchParams();
+            params.append('username', Cookies.get('username'));
+            const result = await axios.get(`http://localhost:5002/collectionsearch?${params.toString()}`);
+            console.log(result.status);
+            if (result.status === 200) {
+                this.state.collections=result.data;
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+            }
+        }
+    }
     
     render() {
         let saveButtonRating = (
@@ -256,7 +287,11 @@ class Book extends Component
                 <h4>End page: {item[3]}</h4>
             </div>
         ));
-
+        const listCollections = this.state.collections.map((item, index) => {
+            return (
+                <option value={item[0]}>{item[1]}</option>
+            )
+        })
         return (
             <div className="book-container">
                 <div className="book-info">
@@ -277,6 +312,12 @@ class Book extends Component
                         </select>
                     </InputGroup>
                     {saveButtonRating}
+                </div>
+                <div className="collection-add">
+                    <button onClick={this.addBook}>Add book to collection</button>
+                    <select id="addcol">
+                        {listCollections}
+                    </select>
                 </div>
                 <div className="tracking-info">
                     <h3>Tracking</h3>

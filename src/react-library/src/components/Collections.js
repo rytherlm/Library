@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import {InputGroup, Input, Button, Container} from 'reactstrap';
-//import './styling/Collections.css';
+import './styling/Collections.css';
 
 // Users can delete books from their collection.
 
@@ -16,8 +16,12 @@ class Collections extends Component
             collectionName: "",
             collectionId: Cookies.get("collectionId"),
             books: [],
+            book0: [],
+            book0path: "",
             isUsers: false,
             bookId: 0,
+            randomPath: "",
+            randomBook: [],
         }
     }
 
@@ -36,8 +40,10 @@ class Collections extends Component
             }
             else{
                 this.setState({books: result2.data});
+                this.setState({collectionName: result.data[2]})
+                this.state.book0 = result2.data[0];
+                this.state.book0path = '/bookinfo/' +result2.data[0][1];
             }
-            this.setState({collectionName: result.data[2]})
             
         } catch(error){
             console.log(error)
@@ -64,30 +70,64 @@ class Collections extends Component
     componentDidMount = () => {       
         this.getCollectionInfo();
     }
-    
-    setBookInfo = (id) => {
-        Cookies.set("BookId", id);
+    getRandom = async(e) => {
+        const params = new URLSearchParams({"CollectionID": this.state.collectionId});
+        const result = await axios.get(`http://localhost:5002/random?${params.toString()}`);
+        this.setState({randomBook: result.data});
+        this.state.randomPath = '/bookinfo/' + result.data[1];
+        this.getCollectionInfo();
+    }
+    setBookInfo = (name) => {
+        Cookies.set("BookInfoName", name);
     }
     render() {
+        try{
         const listBooks = this.state.books.map((item, index) => {
-                const linkPath = `/bookinfo/${item[0]}`;
+                const linkPath = `/bookinfo/${item[1]}`;
+                if(index > 0){
                 return (
-                    <div className="search-result-item">
-                        <Link to={linkPath} className="link-no-underline" key={index} onClick={() => this.setBookInfo(item[0])}>
+                    <div class="list-item">
+                        <Link to={linkPath} className="link-no-underline" key={index} onClick={() => {this.setBookInfo(item[1])}}>
                             <h4>Title: {item[1]}</h4>
                         </Link>
                         <button onClick={() => {this.setBook(item[0])}}>Remove</button>
                     </div>
-                );
-        });
-        if(this.state.books.length>0){
+                );}
+                else{
+                    return (
+                        <div class="list-item">
+                            <Link to={this.state.book0path} className="link-no-underline" key={index} onClick={() => {this.setBookInfo(this.state.book0[1])}}>
+                                <h4>Title: {this.state.book0[1]}</h4>
+                            </Link>
+                            <button onClick={() => {this.setBook(item[0])}}>Remove</button>
+                        </div>
+                    );}                    
+                }
+        );
+        if(this.state.books[0]=0){
             return (
-            <div className="user">
-                {listBooks}
-            </div>
-            );
+                <div>
+                    <h3>No Books in Collection.</h3>
+                </div>
+            )
         }
         else{
+            return (
+                <div>
+                    <div class="random">
+                        <button onClick={this.getRandom}>Get random book</button>
+                        <div class="list-item">
+                        <Link to={this.state.randomPath} className="link-no-underline" onClick={() => {this.setBookInfo(this.state.randomBook[1])}}>
+                            <h4>Title: {this.state.randomBook[1]}</h4>
+                        </Link>
+                    </div>
+                    </div>
+                    <div class="list">
+                        {listBooks}
+                    </div>
+                </div>
+                );
+        }}catch(error){
             return (
                 <div>
                     <h3>No Books in Collection.</h3>
