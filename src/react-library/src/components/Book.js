@@ -7,7 +7,7 @@
 // mark them as read
 
 import {Component} from "react";
-import {InputGroup, Input, Button, Container, Row, Col} from 'reactstrap';
+import {InputGroup, Input, Button, InputGroupText} from 'reactstrap';
 import axios from "axios";
 // import './styling/Search.css';
 import Cookies from "js-cookie";
@@ -32,7 +32,9 @@ class Book extends Component
             status: "Unread",
             tracked: false,
             sections: [],
+            startdate: '',
             starttime: '',
+            enddate: '',
             endtime: '',
             startpage: '',
             endpage: '',
@@ -76,7 +78,7 @@ class Book extends Component
         }
     }
 
-    changeRating = async (e) => {
+    changeRating = (e) => {
         this.setState({userRating: e.target.value})
     }
     
@@ -84,21 +86,29 @@ class Book extends Component
         this.setState({currentProgress: e.target.value})
     }
 
-    changeStatus = async (e) => {
+    changeStatus = (e) => {
         this.setState({status: e.target.value})
     }
-    changeStartTime= async (e) => {
+    changeStartDate = (e) => {
+        this.setState({startdate: e.target.value})
+        console.log(this.state.startdate)
+    }
+    changeStartTime = (e) => {
         this.setState({starttime: e.target.value})
     }
-    changeEndTime = async(e) =>{
+    changeEndDate = (e) => {
+        this.setState({enddate: e.target.value})
+    }
+    changeEndTime = (e) =>{
         this.setState({endtime: e.target.value})
     }
-    changeStartPage = async (e) => {
+    changeStartPage = (e) => {
         this.setState({startpage: e.target.value})
     }
-    changeEndPage = async(e) =>{
+    changeEndPage = (e) =>{
         this.setState({endpage: e.target.value})
     }
+
     saveRatingClick = async () => {
         try{
             if(this.state.currentRating === 0){
@@ -149,34 +159,43 @@ class Book extends Component
     createSectionClick = async(e) => {
         e.preventDefault();
 
-        if (! this.state.startpage || ! this.state.endpage || ! this.state.starttime|| ! this.state.endtime){
+        if (! this.state.startpage || ! this.state.endpage || ! this.state.starttime|| ! this.state.endtime || !this.state.startdate || !this.state.enddate){
             alert("Please fill in all fields for section"); 
+        }
+        else if(this.state.startpage < 0 || this.state.endpage < 0){
+            alert("Pages cannot be negative")
+        }
+        else if(parseInt(this.state.startpage, 10) > parseInt(this.state.endpage, 10)){
+            alert("Start Page cannot be greater than End Page")
+        }
+        else if(this.state.startdate > this.state.enddate){
+            alert("Start Date cannot be later than End Date")
+        }
+        else if(this.state.startdate === this.state.enddate && this.state.starttime > this.state.endtime){
+            alert("Start Time cannot be later than End Time")
         }
         else {
             try {
-                const [hours,minutes]= this.state.starttime.split(':').map(num => parseFloat(num,10));
-                const start = new Date()
-                start.setHours(hours)
-                start.setMinutes(minutes)
-                const [hours2,minutes2]= this.state.starttime.split(':').map(num => parseFloat(num,10));
-                const end = new Date()
-                start.setHours(hours2)
-                start.setMinutes(minutes2)
-                const timestart = start.toTimeString().slice(0, 8)
-                const timeend= end.toTimeString().slice(0, 8)
-                const params = new URLSearchParams({Username: this.state.currentUser,
+                const start =`${this.state.startdate} ${this.state.starttime}`
+                const end = `${this.state.enddate} ${this.state.endtime}`
+                const result = await axios.post('http://localhost:5002/section', {
+                    Username: this.state.currentUser,
                     Bookname: this.state.bookname,
-                    StartTime: timestart,
-                    EndTime: timeend,
+                    StartTime: start,
+                    EndTime: end,
                     StartPage: this.state.startpage,
-                    EndPage: this.state.endpage})
-                const result = await axios.post(`http://localhost:5002/section?${params.toString()}`);
+                    EndPage: this.state.endpage
+                });
+                if(result.status === 400){
+                    alert(result.data.message)
+                }
                 const paramtwo = new URLSearchParams({Username: this.state.currentUser, Bookname: this.state.bookname})
                 const responsefour = await axios.get(`http://localhost:5002/section?${paramtwo.toString()}`);
-                this.setState({sections: responsefour.data.data})
+                this.setState({sections: responsefour.data})
             } catch (error) {
-                alert("Failed to create new section")
-                console.log(error)
+                if(error.response.status === 400){
+                    alert("End Page exceeds the book's length")
+                }
             }
         }
     }
@@ -233,7 +252,8 @@ class Book extends Component
             <div className="section-item" key={index}>
                 <h4>Start time: {item[0]}</h4>
                 <h4>End time: {item[1]}</h4>
-                <h4>Start page: {item[2]} to End page: {item[3]}</h4>
+                <h4>Start page: {item[2]}</h4>
+                <h4>End page: {item[3]}</h4>
             </div>
         ));
 
@@ -276,18 +296,32 @@ class Book extends Component
                 <div className="section-creation-form">
                     <form onSubmit={this.createSectionClick}>
                         <InputGroup className="input-group">
-                            <Input onChange={this.changeStartTime} placeholder="Start Time" />
+                            <InputGroupText>Start Date</InputGroupText>
+                            <Input onChange={this.changeStartDate} type="date"/>
                         </InputGroup>
                         <InputGroup className="input-group">
-                            <Input onChange={this.changeEndTime} placeholder="End Time" />
+                            <InputGroupText>Start Time</InputGroupText>
+                            <Input onChange={this.changeStartTime} type="time"/>
                         </InputGroup>
                         <InputGroup className="input-group">
-                            <Input onChange={this.changeStartPage} placeholder="Start Page" />
+                            <InputGroupText>End Date</InputGroupText>
+                            <Input onChange={this.changeEndDate} type="date" />
                         </InputGroup>
                         <InputGroup className="input-group">
-                            <Input onChange={this.changeEndPage} placeholder="End Page" />
+                            <InputGroupText>End Time</InputGroupText>
+                            <Input onChange={this.changeEndTime} type="time" />
+                        </InputGroup>
+                        <InputGroup className="input-group">
+                            <InputGroupText>Start Page</InputGroupText>
+                            <Input onChange={this.changeStartPage} type="number" />
+                        </InputGroup>
+                        <InputGroup className="input-group">
+                            <InputGroupText>End Page</InputGroupText>
+                            <Input onChange={this.changeEndPage} type="number" />
                         </InputGroup>
                         {createSection}
+                        <h2>Your Sections</h2>
+                        {sectionList}
                     </form>
                 </div>
             </div>
