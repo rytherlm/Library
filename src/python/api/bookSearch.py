@@ -12,13 +12,16 @@ class BookSearch(Resource):
             if(key == "title"):
                 sql = """SELECT book.*, 
                 STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
-                STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
-                FROM book, contributor, contribute, genres, bookgenre
+                STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', '),
+                COALESCE(SUM(rating.rating), 0), 
+                COALESCE(COUNT(rating.rating), 0) 
+                FROM book
+                LEFT JOIN contribute ON book.bookid = contribute.bookid
+                LEFT JOIN contributor ON contribute.contributorid = contributor.contributorid
+                LEFT JOIN bookgenre ON book.bookid = bookgenre.bookid
+                LEFT JOIN genres ON bookgenre.genreid = genres.genreid
+                LEFT JOIN rating ON book.bookid = rating.bookid  
                 WHERE LOWER(title) LIKE %s
-                AND book.bookid = contribute.bookid
-                AND contribute.contributorid = contributor.contributorid
-                AND bookgenre.bookid = book.bookid
-                AND bookgenre.genreid = genres.genreid
                 GROUP BY book.bookid
                 ORDER BY book.title ASC, book.releasedate ASC
                 """
@@ -26,13 +29,16 @@ class BookSearch(Resource):
             elif(key == "releasedate"):
                 sql = """SELECT book.*, 
                 STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
-                STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
-                FROM book, contributor, contribute, genres, bookgenre
+                STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', '),
+                COALESCE(SUM(rating.rating), 0), 
+                COALESCE(COUNT(rating.rating), 0) 
+                FROM book
+                LEFT JOIN contribute ON book.bookid = contribute.bookid
+                LEFT JOIN contributor ON contribute.contributorid = contributor.contributorid
+                LEFT JOIN bookgenre ON book.bookid = bookgenre.bookid
+                LEFT JOIN genres ON bookgenre.genreid = genres.genreid
+                LEFT JOIN rating ON book.bookid = rating.bookid  
                 WHERE releasedate = %s
-                AND book.bookid = contribute.bookid
-                AND contribute.contributorid = contributor.contributorid
-                AND bookgenre.bookid = book.bookid
-                AND bookgenre.genreid = genres.genreid
                 GROUP BY book.bookid
                 ORDER BY book.title ASC, book.releasedate ASC"""
                 params.append(value)
@@ -53,13 +59,16 @@ class BookSearch(Resource):
                     for book in books:
                         sql = """SELECT book.*, 
                         STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
-                        STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
-                        FROM book, contributor, contribute, genres, bookgenre
+                        STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', '),
+                        COALESCE(SUM(rating.rating), 0), 
+                        COALESCE(COUNT(rating.rating), 0) 
+                        FROM book
+                        LEFT JOIN contribute ON book.bookid = contribute.bookid
+                        LEFT JOIN contributor ON contribute.contributorid = contributor.contributorid
+                        LEFT JOIN bookgenre ON book.bookid = bookgenre.bookid
+                        LEFT JOIN genres ON bookgenre.genreid = genres.genreid
+                        LEFT JOIN rating ON book.bookid = rating.bookid  
                         WHERE book.bookid = %s
-                        AND book.bookid = contribute.bookid
-                        AND contribute.contributorid = contributor.contributorid
-                        AND bookgenre.bookid = book.bookid
-                        AND bookgenre.genreid = genres.genreid
                         GROUP BY book.bookid
                         ORDER BY book.title ASC, book.releasedate ASC
                         """
@@ -77,13 +86,16 @@ class BookSearch(Resource):
                     for book in books:
                         sql = """SELECT book.*, 
                         STRING_AGG(DISTINCT COALESCE(contributor.firstname, '') || ' ' || COALESCE(contributor.lastname, ''), ', '),
-                        STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', ')
-                        FROM book, contributor, contribute, genres, bookgenre
+                        STRING_AGG(DISTINCT COALESCE(genres.genre, ''), ', '),
+                        COALESCE(SUM(rating.rating), 0), 
+                        COALESCE(COUNT(rating.rating), 0) 
+                        FROM book
+                        LEFT JOIN contribute ON book.bookid = contribute.bookid
+                        LEFT JOIN contributor ON contribute.contributorid = contributor.contributorid
+                        LEFT JOIN bookgenre ON book.bookid = bookgenre.bookid
+                        LEFT JOIN genres ON bookgenre.genreid = genres.genreid
+                        LEFT JOIN rating ON book.bookid = rating.bookid  
                         WHERE book.bookid = %s
-                        AND book.bookid = contribute.bookid
-                        AND contribute.contributorid = contributor.contributorid
-                        AND bookgenre.bookid = book.bookid
-                        AND bookgenre.genreid = genres.genreid
                         GROUP BY book.bookid
                         ORDER BY book.title ASC, book.releasedate ASC"""
                         result = exec_get_one(sql, (book[0],))
@@ -91,5 +103,4 @@ class BookSearch(Resource):
                             returnData.append(result)
                 return returnData
         result = exec_get_all(sql, params)
-        print(result)
         return result

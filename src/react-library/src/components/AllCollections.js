@@ -40,6 +40,9 @@ const AllCollections = () => {
     const createCollection = async (e) => {
         e.preventDefault();
 
+// Users can add and delete books from their collection.
+
+
         if(!collectionName)
         {
             alert("Please fill in all fields.");

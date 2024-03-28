@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Search from './components/Search';
 import UserInfo from './components/UserInfo';
 import Friends from './components/Friends';
+import Book from './components/Book';
 import AllCollections from './components/AllCollections';
 import Collections from './components/Collections';
 
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="search" element={<Search/>} />
         <Route path="/userinfo/:username" element={<UserInfo />} />
         <Route path="/friends" element={<Friends/>}/>
+        <Route path="/bookinfo/:bookName" element={<Book />}/>
         <Route path="/allCollections" element={<AllCollections/>}/>
         <Route path="/collections/:collectionid" element={<Collections/>}/>
       </Routes>
