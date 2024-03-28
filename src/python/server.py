@@ -14,6 +14,7 @@ from api.section import Section
 from api.collection import Collection
 from api.collectionSearch import CollectionSearch
 from api.stores import Stores
+from api.randomBook import RandomBook
 
 
 app = Flask(__name__) #create Flask instance
@@ -32,6 +33,7 @@ api.add_resource(Section,'/section')
 api.add_resource(Collection, '/collection')
 api.add_resource(CollectionSearch, '/collectionsearch')
 api.add_resource(Stores, '/stores')
+api.add_resource(RandomBook, '/random')
 
 if __name__ == '__main__':
     print("Loading db")

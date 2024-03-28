@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useNavigate, Link} from 'react-router-dom';
-//import './styling/AllCollections.css';
+import './styling/AllCollections.css';
 import Cookies from 'js-cookie';
 import { Container, Input, InputGroup } from 'reactstrap';
 
@@ -106,15 +106,15 @@ const AllCollections = () => {
     const collection_list = myCollections.map((item, index) => {
         const linkPath = `/collections/${item[0]}`;
         return (
-            <div>
+            <div class="list">
             <Link to={linkPath} className="link-no-underline" key={index} onClick={() => setCollectionInfo(item[0])}>
-                <div className="list_item">
+                <div class="list-item">
                     {
                     <>
-                        <h3>Collectionid: {item[0]}</h3>
                         <h3>CollectionName: {item[1]}</h3>
                         <h4>Books: {item[2]}</h4>
                         <h4>Pages: 0{item[3]}</h4>
+                        
                     </>
                     }
                 </div>
@@ -132,7 +132,6 @@ const AllCollections = () => {
     });
     return(
         <div className='collections'>
-            <button onClick={listCollections}>List</button>
             <div className='list-collections'>
                 <h1>Collections</h1>
                 {collection_list}
