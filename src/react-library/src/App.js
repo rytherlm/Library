@@ -7,6 +7,7 @@ import Search from './components/Search';
 import UserInfo from './components/UserInfo';
 import Friends from './components/Friends';
 import AllCollections from './components/AllCollections';
+import Collections from './components/Collections';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/userinfo/:username" element={<UserInfo />} />
         <Route path="/friends" element={<Friends/>}/>
         <Route path="/allCollections" element={<AllCollections/>}/>
+        <Route path="/collections/:collectionid" element={<Collections/>}/>
       </Routes>
     </Router>
   );

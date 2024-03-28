@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useNavigate, Link} from 'react-router-dom';
 //import './styling/AllCollections.css';
@@ -16,7 +16,27 @@ import { Container, Input, InputGroup } from 'reactstrap';
 //  Users can modify the name of a collection. They can also delete an entire collection
 const AllCollections = () => {
     const [collectionName, setCollectionName] = useState('');
-    var myCollections = [];
+    var collectionId = 0;
+    var username = Cookies.get('username');
+    const [myCollections, setMyCollections] = useState([]);
+    const listCollections = async (e) => {
+        try{
+            const params = new URLSearchParams();
+            params.append('username', Cookies.get('username'));
+            const result = await axios.get(`http://localhost:5002/collectionsearch?${params.toString()}`);
+            console.log(result.status);
+            if (result.status === 200) {
+                setMyCollections(result.data);
+                console.log(result.data);
+                console.log(myCollections);
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                alert('No results.');
+            }
+        }
+    }
+    window.onload = listCollections;
     const createCollection = async (e) => {
         e.preventDefault();
 
@@ -28,56 +48,91 @@ const AllCollections = () => {
 
         try {
             const result = await axios.post('http://localhost:5002/collection', {
-                Username: Cookies.get('username'),
+                Username: username,
                 CollectionName: collectionName,
             });
             console.log(result.status);
-            if(result.status === 201)
+            if(result.status === 200)
             {
-                //navigate('./' + collectionName);
+                listCollections(e);
             }
         } catch (error) {
             console.error('Collection creation failed: ', error);
         }
     };
-    const listCollections = async (e) => {
-        e.preventDefault();
-        try{
-            const params = new URLSearchParams();
-            params.append('username', Cookies.get('username'));
-            //const params = new URLSearchParams({ collection_id: 1 });
-            const result = await axios.get(`http://localhost:5002/collectionsearch?${params.toString()}`);
-            //const result = await axios.get(`http://localhost:5002/collectionsearch?a`);
-            /*const result = await axios.get('http://localhost:5002/collectionsearch', {
-                Username: Cookies.get('username'),
-            });*/
-            console.log(result.status);
-            if (result.status === 200) {
-                console.log(result);
-                myCollections=result.data;
-            }
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                alert('No results.');
-            }
-        }
+    const deleteCollection = (id) => {
+        collectionId = id;
+        deleteC();
     }
-    var collection_list = myCollections.map((item, index) => {
+    const deleteC = async(e) => {        
+        const params = new URLSearchParams({"CollectionID": collectionId});
+        console.log(collectionId);
+        const result = await axios.delete(`http://localhost:5002/collection?${params.toString()}`);
+            console.log(result.data);
+            if(result.data === 200)
+            {
+                listCollections();
+            }
+    }
+    const renameCollection = async(e) => {
+        console.log(collectionId);
+        try {
+        const result = await axios.put('http://localhost:5002/collection?', {
+            Username: username,
+            CollectionID: collectionId,
+            CollectionName: collectionName
+        }
+        );
+        console.log(result.data);
+        if(result.data === 200)
+            {   
+                listCollections();
+            }
+    } catch (error) {
+        console.error('Collection rename failed: ', error);
+    }
+            
+    }
+    const rename = (id) => {
+        collectionId = id;
+        renameCollection();
+    }
+    const setCollectionInfo = (id) => {
+        Cookies.set("collectionId", id)
+    }
+    const collection_list = myCollections.map((item, index) => {
+        const linkPath = `/collections/${item[0]}`;
         return (
-            <div className="collection">
-                <h1>Test</h1>
-                <h3>Username: {item[1]}</h3>
-                <h4>CollectionName: {item[0]}</h4>
-             </div>
+            <div>
+            <Link to={linkPath} className="link-no-underline" key={index} onClick={() => setCollectionInfo(item[0])}>
+                <div className="list_item">
+                    {
+                    <>
+                        <h3>Collectionid: {item[0]}</h3>
+                        <h3>CollectionName: {item[1]}</h3>
+                        <h4>Books: {item[2]}</h4>
+                        <h4>Pages: 0{item[3]}</h4>
+                    </>
+                    }
+                </div>
+            </Link>
+                <input
+                    type="text"
+                    placeholder="Collection Rename"
+                    value={collectionName}
+                    onChange={(e) => setCollectionName(e.target.value)}
+                />
+                <button onClick={() => {rename(item[0])}}>Rename Collection</button>
+            <button onClick={() => {deleteCollection(item[0])}}>Remove</button>
+            </div>
         );
     });
-            
     return(
         <div className='collections'>
             <button onClick={listCollections}>List</button>
-            <div className='list-collections' onLoad={listCollections}>
+            <div className='list-collections'>
                 <h1>Collections</h1>
-                <Container>{collection_list}</Container>
+                {collection_list}
             </div>
             <div className="new-collection">
                 <form onSubmit={createCollection} className="collection-form">
@@ -93,84 +148,4 @@ const AllCollections = () => {
         </div>
     );
 };
-/*
-class AllCollections extends Component{
-    constructor(props){
-        super(props);
-        this.state={
-            username: "",
-            collectionName: "",
-            myCollections: [],
-            collection_id: 1,
-        }
-    }
-    createCollection = async (e) => {
-        e.preventDefault();
-
-        if(!this.state.collectionName)
-        {
-            alert("Please fill in all fields.");
-            return;
-        }
-
-        try {
-            const result = await axios.post('http://localhost:5002/collection', {
-                Username: Cookies.get('username'),
-                CollectionName: this.state.collectionName,
-            });
-            console.log(result.status);
-            if(result.status === 201)
-            {
-                //navigate('./' + collectionName);
-            }
-        } catch (error) {
-            console.error('Collection creation failed: ', error);
-        }
-    }
-    listCollections = async (e) => {
-        e.preventDefault();
-        console.log();
-        try{
-            const params = new URLSearcgihParams();
-            params.append('username', Cookies.get('username'));
-            const result = await axios.get(`http://localhost:5002/collectionsearch?${params.toString()}`);
-            console.log(result.status);
-            if (result.status === 200) {
-                //
-                this.setState({myCollections: result.data});
-            }
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                alert('No results.');
-            }
-            else{
-                alert(error)
-            }
-        }
-    }
-    setVal = (e) => {
-        this.setState({collectionName: e.target.value})
-    }
-    render() {
-        return (
-            <div className='collections'>
-                <button onClick={this.listCollections}>List</button>
-                <div className='list-collections'>
-                    <h1>Collections</h1>
-                </div>
-                <div className="new-collection">
-                    <form onSubmit={this.createCollection} className="collection-form">
-                        <InputGroup>
-                        <Input
-                            onChange={this.setVal}
-                        />
-                        </InputGroup>
-                        <button type="submit">Create Collection</button>
-                    </form>
-                </div>
-            </div>
-        );
-    }
-
-}*/
 export default AllCollections;
