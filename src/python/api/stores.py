@@ -5,20 +5,15 @@ from flask_restful import reqparse
 from .utils import *
 
 class Stores(Resource):
-    def get(self, collection_id=None):
-        if collection_id is not None:
-            sql = "SELECT * FROM Stores WHERE CollectionID = %s"
+    def get(self):
+        for i, key in enumerate(request.args.keys()):
+            collection_id = request.args[key]
+            sql = "SELECT b.bookid, title FROM stores as s left join book as b on (s.bookid = b.bookid) WHERE CollectionID = %s"
             result = exec_get_all(sql, (collection_id,))
             if result:
                 return result, 200
             else:
                 return 404
-        else:
-            sql = "SELECT * FROM Stores"
-            result = exec_get_all(sql)
-            if result:
-                return result, 200
-            return [], 200
 
     def put(self):
         parser = reqparse.RequestParser()
@@ -60,12 +55,11 @@ class Stores(Resource):
         return 404
 
     def delete(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('CollectionID', type=int, required=True)
-        parser.add_argument('BookID', type=int, required=True)
-        args = parser.parse_args()
+        collection = request.args.get("CollectionID")
+        book = request.args.get("BookID")
 
         sql = "DELETE FROM Stores WHERE CollectionID = %s AND BookID = %s"
-        if exec_commit(sql, (args['CollectionID'], args['BookID'])):
+        success = exec_commit(sql, (collection, book))
+        if success:
             return 200
         return 404
