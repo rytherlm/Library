@@ -278,6 +278,10 @@ class Book extends Component
         else{
             rating = parseFloat(this.state.averageRating).toFixed(1)
         }
+        const contributors = this.state.info[0][5];
+        const contributor = contributors.split(',');
+        const author = contributor[0].trim();
+        const publisher = contributor.slice(1).join(',').trim();
 
         const sectionList = this.state.sections.map((item, index) => (
             <div className="section-item" key={index}>
@@ -296,7 +300,8 @@ class Book extends Component
             <div className="book-container">
                 <div className="book-info">
                     <h3>Title: {this.state.info[0][1]}</h3>
-                    <h4>Author and Publisher: {this.state.info[0][5]}</h4>
+                    <h4>Author and Publisher: {author}</h4>
+                    <h4>Publisher: {publisher}</h4>
                     <h4>Release Date: {this.state.info[0][4]}</h4>
                     <h4>Audience: {this.state.info[0][3]}</h4>
                     <h4>Length: {this.state.info[0][2]} pages</h4>
