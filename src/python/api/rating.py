@@ -26,7 +26,7 @@ class BookRatings(Resource):
             WHERE BookID = %s
             """
             average_rating = exec_get_one(sql, (book_id,))
-            if average_rating[0] is not None:
+            if average_rating is not None and average_rating[0] is not None:
                 return {"average_rating": float(average_rating[0])}
             else:
                 return {"average_rating": -1}
