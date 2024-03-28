@@ -26,7 +26,9 @@ class Collections extends Component
     }
 
     getCollectionInfo = async (e) => {
-        try{         
+        try{      
+            this.state.book0 = [];
+            this.state.book0path = "";   
             const params = new URLSearchParams({collection_id: this.state.collectionId});
             console.log(params.toString());
             console.log(this.state.currentUser);
@@ -35,18 +37,13 @@ class Collections extends Component
             console.log(result.data);
             console.log(result2.data);
             this.setState({isUsers: Cookies.get('username')===result.data[1]})
-            
-            if(result2.data === null || result2.data.length === 0){
-            }
-            else{
-                this.setState({books: result2.data});
-                this.setState({collectionName: result.data[2]})
-                this.state.book0 = result2.data[0];
-                this.state.book0path = '/bookinfo/' +result2.data[0][1];
-            }
+            this.setState({books: result2.data});
+            this.setState({collectionName: result.data[2]})
+            this.state.book0 = result2.data[0];
+            this.state.book0path = '/bookinfo/' +result2.data[0][1];
             
         } catch(error){
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -56,6 +53,7 @@ class Collections extends Component
                 const params = new URLSearchParams({"CollectionID": this.state.collectionId, "BookID": this.state.bookId});
                 const result = await axios.delete(`http://localhost:5002/stores?${params.toString()}`);
                 this.setState({bookId: 0});
+                this.getCollectionInfo();
                 //if(result.status === 200){
                 //}
         } catch(error){
@@ -75,7 +73,6 @@ class Collections extends Component
         const result = await axios.get(`http://localhost:5002/random?${params.toString()}`);
         this.setState({randomBook: result.data});
         this.state.randomPath = '/bookinfo/' + result.data[1];
-        this.getCollectionInfo();
     }
     setBookInfo = (name) => {
         Cookies.set("BookInfoName", name);
@@ -86,7 +83,7 @@ class Collections extends Component
                 const linkPath = `/bookinfo/${item[1]}`;
                 if(index > 0){
                 return (
-                    <div class="list-item">
+                    <div className="list-item">
                         <Link to={linkPath} className="link-no-underline" key={index} onClick={() => {this.setBookInfo(item[1])}}>
                             <h4>Title: {item[1]}</h4>
                         </Link>
@@ -95,11 +92,11 @@ class Collections extends Component
                 );}
                 else{
                     return (
-                        <div class="list-item">
+                        <div className="list-item">
                             <Link to={this.state.book0path} className="link-no-underline" key={index} onClick={() => {this.setBookInfo(this.state.book0[1])}}>
                                 <h4>Title: {this.state.book0[1]}</h4>
                             </Link>
-                            <button onClick={() => {this.setBook(item[0])}}>Remove</button>
+                            <button onClick={() => {this.setBook(this.state.book0[0])}}>Remove</button>
                         </div>
                     );}                    
                 }
@@ -114,15 +111,15 @@ class Collections extends Component
         else{
             return (
                 <div>
-                    <div class="random">
+                    <div className="random">
                         <button onClick={this.getRandom}>Get random book</button>
-                        <div class="list-item">
+                        <div className="list-item">
                         <Link to={this.state.randomPath} className="link-no-underline" onClick={() => {this.setBookInfo(this.state.randomBook[1])}}>
                             <h4>Title: {this.state.randomBook[1]}</h4>
                         </Link>
                     </div>
                     </div>
-                    <div class="list">
+                    <div className="list">
                         {listBooks}
                     </div>
                 </div>
