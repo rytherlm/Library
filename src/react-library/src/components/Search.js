@@ -208,9 +208,17 @@ class Search extends Component
             const ratingValues = item[7];
             const ratingCount = item[8];
             const contributors = item[5];
-            const contributor = contributors.split(',');
-            const author = contributor[0].trim();
-            const publisher = contributor.slice(1).join(',').trim();
+            let author;
+            let publisher;
+            if(typeof contributors !== 'undefined'){
+                const contributor = contributors.split(',');
+                author = contributor[0].trim();
+                publisher = contributor.slice(1).join(',').trim();
+                console.log(publisher == '')
+                if(publisher === ''){
+                    publisher = "No data"
+                }
+            }
             const average = ratingCount != 0 ? ratingValues/ratingCount : "No data";
             const linkPath = this.state.searchType === "user" ? `/userinfo/${item[1]}` : `/bookinfo/${item[1]}`;
             return (

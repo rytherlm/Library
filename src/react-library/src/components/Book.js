@@ -279,9 +279,17 @@ class Book extends Component
             rating = parseFloat(this.state.averageRating).toFixed(1)
         }
         const contributors = this.state.info[0][5];
-        const contributor = contributors.split(',');
-        const author = contributor[0].trim();
-        const publisher = contributor.slice(1).join(',').trim();
+        let author;
+        let publisher;
+        if(typeof contributors !== 'undefined'){
+            const contributor = contributors.split(',');
+            author = contributor[0].trim();
+            publisher = contributor.slice(1).join(',').trim();
+            console.log(publisher == '')
+            if(publisher === ''){
+                publisher = "No data"
+            }
+        }
 
         const sectionList = this.state.sections.map((item, index) => (
             <div className="section-item" key={index}>
