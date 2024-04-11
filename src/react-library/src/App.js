@@ -9,6 +9,7 @@ import Friends from './components/Friends';
 import Book from './components/Book';
 import AllCollections from './components/AllCollections';
 import Collections from './components/Collections';
+import Profile from './components/profile';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/bookinfo/:bookName" element={<Book />}/>
         <Route path="/allCollections" element={<AllCollections/>}/>
         <Route path="/collections/:collectionid" element={<Collections/>}/>
+        <Route path="/profile" element={<Profile/>}/>
       </Routes>
     </Router>
   );

@@ -21,6 +21,10 @@ const Home = () => {
   const collections = () => {
     navigate('/allcollections');
   };
+  const profile = () => {
+    navigate('/profile');
+  };
+
 
  
 
@@ -30,8 +34,8 @@ const Home = () => {
       <button onClick={handleLogout}>Logout</button>
       <button onClick={search}>search</button>
       <button onClick={friends}>friends</button>
-
       <button onClick={collections}>collections</button>
+      <button onClick={profile}>profile</button>
     </div>
   );
 };
