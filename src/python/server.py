@@ -16,6 +16,10 @@ from api.collectionSearch import CollectionSearch
 from api.stores import Stores
 from api.randomBook import RandomBook
 from api.profile import Profile
+from api.followerBooks import FollowerBooks
+from api.TopBooks import TopBooks
+from api.top5books import Top5Books
+from api.forYou import ForYou
 
 
 app = Flask(__name__) #create Flask instance
@@ -36,6 +40,10 @@ api.add_resource(CollectionSearch, '/collectionsearch')
 api.add_resource(Stores, '/stores')
 api.add_resource(RandomBook, '/random')
 api.add_resource(Profile, '/profile')
+api.add_resource(FollowerBooks, '/followerbook')
+api.add_resource(TopBooks, '/topbooks')
+api.add_resource(Top5Books, '/topfive')
+api.add_resource(ForYou, '/foryou')
 
 if __name__ == '__main__':
     print("Loading db")

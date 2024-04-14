@@ -10,6 +10,7 @@ import Book from './components/Book';
 import AllCollections from './components/AllCollections';
 import Collections from './components/Collections';
 import Profile from './components/profile';
+import Recommend from './components/recommend';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/allCollections" element={<AllCollections/>}/>
         <Route path="/collections/:collectionid" element={<Collections/>}/>
         <Route path="/profile" element={<Profile/>}/>
+        <Route path="/recommend" element={<Recommend/>}/>
       </Routes>
     </Router>
   );
