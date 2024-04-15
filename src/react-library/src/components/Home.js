@@ -24,6 +24,11 @@ const Home = () => {
   const profile = () => {
     navigate('/profile');
   };
+  const recommend = () => {
+    navigate('/recommend');
+  };
+
+
 
 
  
@@ -36,6 +41,7 @@ const Home = () => {
       <button onClick={friends}>friends</button>
       <button onClick={collections}>collections</button>
       <button onClick={profile}>profile</button>
+      <button onClick={recommend}>recommend</button>
     </div>
   );
 };
